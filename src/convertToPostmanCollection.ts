@@ -1,6 +1,7 @@
 import { HttpAuth, HttpEndpoint, HttpMethod, HttpService, IntermediateRepresentation } from "@fern-api/api";
 import {
     CollectionDefinition,
+    HeaderDefinition,
     ItemDefinition,
     ItemGroupDefinition,
     RequestAuthDefinition,
@@ -11,6 +12,11 @@ import urlJoin from "url-join";
 
 const BASE_URL_VARIABLE = "{{base_url}}";
 const BASE_URL_DEFAULT_VAULE = "http://localhost:8080";
+
+const APPLICATION_JSON_HEADER_DEFINITION: HeaderDefinition = {
+    key: "Content-Type",
+    value: "application/json",
+};
 
 export function convertToPostmanCollection(ir: IntermediateRepresentation): CollectionDefinition {
     const id = ir.workspaceName ?? "Untitled API";
@@ -48,6 +54,7 @@ function getCollectionItems(ir: IntermediateRepresentation): ItemGroupDefinition
 function convertEndpoint(httpEndpoint: HttpEndpoint, httpService: HttpService): ItemDefinition {
     let convertedEndpoint: ItemDefinition = {};
     convertedEndpoint.name = httpEndpoint.endpointId;
+    httpEndpoint.parameters.forEach((pathParameter) => {});
     convertedEndpoint.request = convertRequest(httpService, httpEndpoint);
     if (httpEndpoint.response != null) {
         convertedEndpoint.response = [convertResponse()];
@@ -58,13 +65,21 @@ function convertEndpoint(httpEndpoint: HttpEndpoint, httpService: HttpService): 
 function convertResponse(): ResponseDefinition {
     return {
         code: 200,
+        header: [APPLICATION_JSON_HEADER_DEFINITION],
         responseTime: 0,
     };
 }
 
 function convertRequest(httpService: HttpService, httpEndpoint: HttpEndpoint): RequestDefinition {
     let convertedRequest: RequestDefinition = {
-        url: urlJoin(BASE_URL_VARIABLE, httpService.basePath, httpEndpoint.path),
+        url: {
+            host: [BASE_URL_VARIABLE],
+            path: [
+                ...convertPathToPostmanPathArray(httpService.basePath),
+                ...convertPathToPostmanPathArray(httpEndpoint.path),
+            ],
+        },
+        header: [APPLICATION_JSON_HEADER_DEFINITION],
         method: convertHttpMethod(httpEndpoint.method),
         auth: httpService.auth != null ? convertAuth(httpService.auth) : undefined,
     };
@@ -72,6 +87,15 @@ function convertRequest(httpService: HttpService, httpEndpoint: HttpEndpoint): R
         convertedRequest.description = httpEndpoint.request.docs ?? undefined;
     }
     return convertedRequest;
+}
+
+function convertPathToPostmanPathArray(path: string): string[] {
+    return path.split("/").map((path) => {
+        if (path.startsWith("{") && path.endsWith("}")) {
+            return ":" + path.substring(1, path.length - 2);
+        }
+        return path;
+    });
 }
 
 function convertHttpMethod(httpMethod: HttpMethod): string {
