@@ -1,14 +1,15 @@
-import { convertToPostmanCollection } from "../index";
+import { convertToPostmanCollection } from "../convertToPostmanCollection";
 
 describe("index", () => {
     it("dummy", () => {
         convertToPostmanCollection({
+            workspaceName: undefined,
             types: [],
+            errors: [],
             services: {
                 http: [],
                 websocket: [],
             },
-            errors: [],
         });
     });
 });
