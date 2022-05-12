@@ -8,9 +8,9 @@ import {
     RequestDefinition,
     ResponseDefinition,
 } from "postman-collection";
-import urlJoin from "url-join";
 
-const BASE_URL_VARIABLE = "{{base_url}}";
+const BASE_URL_VARIABLE_NAME = "base_url";
+const BASE_URL_VARIABLE = `{{${BASE_URL_VARIABLE_NAME}}}`;
 const BASE_URL_DEFAULT_VAULE = "http://localhost:8080";
 
 const APPLICATION_JSON_HEADER_DEFINITION: HeaderDefinition = {
@@ -28,7 +28,7 @@ export function convertToPostmanCollection(ir: IntermediateRepresentation): Coll
         item: getCollectionItems(ir),
         variable: [
             {
-                key: BASE_URL_VARIABLE,
+                key: BASE_URL_VARIABLE_NAME,
                 value: BASE_URL_DEFAULT_VAULE,
             },
         ],
@@ -54,7 +54,6 @@ function getCollectionItems(ir: IntermediateRepresentation): ItemGroupDefinition
 function convertEndpoint(httpEndpoint: HttpEndpoint, httpService: HttpService): ItemDefinition {
     let convertedEndpoint: ItemDefinition = {};
     convertedEndpoint.name = httpEndpoint.endpointId;
-    httpEndpoint.parameters.forEach((pathParameter) => {});
     convertedEndpoint.request = convertRequest(httpService, httpEndpoint);
     if (httpEndpoint.response != null) {
         convertedEndpoint.response = [convertResponse()];
@@ -90,12 +89,15 @@ function convertRequest(httpService: HttpService, httpEndpoint: HttpEndpoint): R
 }
 
 function convertPathToPostmanPathArray(path: string): string[] {
-    return path.split("/").map((path) => {
-        if (path.startsWith("{") && path.endsWith("}")) {
-            return ":" + path.substring(1, path.length - 2);
-        }
-        return path;
-    });
+    return path
+        .split("/")
+        .map((path) => {
+            if (path.startsWith("{") && path.endsWith("}")) {
+                return ":" + path.substring(1, path.length - 1);
+            }
+            return path;
+        })
+        .filter((path) => path.length !== 0);
 }
 
 function convertHttpMethod(httpMethod: HttpMethod): string {
