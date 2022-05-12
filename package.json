@@ -43,7 +43,6 @@
     "@fern-api/api": "^0.0.59",
     "@fern-api/compiler": "^0.0.59",
     "postman-collection": "^4.1.2",
-    "url-join": "^5.0.0",
     "zod": "^3.16.0"
   },
   "packageManager": "yarn@3.2.0"
