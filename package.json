@@ -13,7 +13,8 @@
     "lint": "eslint --max-warnings 0",
     "lint:fix": "eslint --max-warnings 0 . --fix",
     "format": "prettier --write --ignore-unknown \"**\"",
-    "format:check": "run format --check"
+    "format:check": "run format --check",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@babel/core": "^7.17.10",
@@ -25,6 +26,7 @@
     "depcheck": "^1.4.3",
     "eslint": "^8.15.0",
     "fern-api": "^0.0.62",
+    "husky": "^8.0.1",
     "jest": "^28.1.0",
     "lint-staged": "^12.4.1",
     "prettier": "^2.6.2",
