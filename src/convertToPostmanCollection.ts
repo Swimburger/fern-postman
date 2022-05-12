@@ -9,6 +9,9 @@ import {
 } from "postman-collection";
 import urlJoin from "url-join";
 
+const BASE_URL_VARIABLE = "{{base_url}}";
+const BASE_URL_DEFAULT_VAULE = "http://localhost:8080";
+
 export function convertToPostmanCollection(ir: IntermediateRepresentation): CollectionDefinition {
     const id = ir.workspaceName ?? "Untitled API";
     return {
@@ -17,10 +20,14 @@ export function convertToPostmanCollection(ir: IntermediateRepresentation): Coll
             name: id,
         },
         item: getCollectionItems(ir),
+        variable: [
+            {
+                key: BASE_URL_VARIABLE,
+                value: BASE_URL_DEFAULT_VAULE,
+            },
+        ],
     };
 }
-
-const BASE_URL_VARIABLE = "{{base_url}}";
 
 function getCollectionItems(ir: IntermediateRepresentation): ItemGroupDefinition[] {
     let serviceItems: ItemGroupDefinition[] = [];
