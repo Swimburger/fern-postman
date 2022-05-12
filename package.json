@@ -12,8 +12,9 @@
     "depcheck": "depcheck",
     "lint": "eslint --max-warnings 0",
     "lint:fix": "eslint --max-warnings 0 . --fix",
-    "format": "prettier --write --ignore-unknown \"**\"",
-    "format:check": "run format --check",
+    "format": "prettier --write --ignore-unknown",
+    "format:all": "yarn format \"**\"",
+    "format:check": "yarn format:all --check",
     "prepare": "husky install"
   },
   "devDependencies": {
