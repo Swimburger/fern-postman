@@ -1,4 +1,11 @@
-import { HttpAuth, HttpEndpoint, HttpMethod, HttpService, IntermediateRepresentation } from "@fern-api/api";
+import {
+    HttpAuth,
+    HttpEndpoint,
+    HttpMethod,
+    HttpService,
+    IntermediateRepresentation,
+    TypeDefinition,
+} from "@fern-api/api";
 import {
     CollectionDefinition,
     HeaderDefinition,
@@ -8,6 +15,7 @@ import {
     RequestDefinition,
     ResponseDefinition,
 } from "postman-collection";
+import { getMockBody } from "./getMockBody";
 
 const BASE_URL_VARIABLE_NAME = "base_url";
 const BASE_URL_VARIABLE = `{{${BASE_URL_VARIABLE_NAME}}}`;
@@ -40,7 +48,7 @@ function getCollectionItems(ir: IntermediateRepresentation): ItemGroupDefinition
     for (const httpService of ir.services.http) {
         let endpointItems: ItemDefinition[] = [];
         for (const httpEndpoint of httpService.endpoints) {
-            endpointItems.push(convertEndpoint(httpEndpoint, httpService));
+            endpointItems.push(convertEndpoint(httpEndpoint, httpService, ir.types));
         }
         const serviceItem: ItemGroupDefinition = {
             name: httpService.name.name,
@@ -51,25 +59,45 @@ function getCollectionItems(ir: IntermediateRepresentation): ItemGroupDefinition
     return serviceItems;
 }
 
-function convertEndpoint(httpEndpoint: HttpEndpoint, httpService: HttpService): ItemDefinition {
+function convertEndpoint(
+    httpEndpoint: HttpEndpoint,
+    httpService: HttpService,
+    allTypes: TypeDefinition[]
+): ItemDefinition {
     let convertedEndpoint: ItemDefinition = {};
     convertedEndpoint.name = httpEndpoint.endpointId;
-    convertedEndpoint.request = convertRequest(httpService, httpEndpoint);
+    convertedEndpoint.request = convertRequest(httpService, httpEndpoint, allTypes);
     if (httpEndpoint.response != null) {
-        convertedEndpoint.response = [convertResponse()];
+        convertedEndpoint.response = [convertResponse(httpEndpoint, allTypes, convertedEndpoint.request)];
     }
+    convertedEndpoint.description = httpEndpoint.docs ?? undefined;
     return convertedEndpoint;
 }
 
-function convertResponse(): ResponseDefinition {
-    return {
+function convertResponse(
+    httpEndpoint: HttpEndpoint,
+    allTypes: TypeDefinition[],
+    convertedRequest: RequestDefinition
+): ResponseDefinition {
+    let convertedResponse: ResponseDefinition = {
+        name: "Successful " + httpEndpoint.endpointId,
         code: 200,
         header: [APPLICATION_JSON_HEADER_DEFINITION],
         responseTime: 0,
+        originalRequest: convertedRequest,
     };
+    if (httpEndpoint.response != null) {
+        convertedResponse.description = httpEndpoint.response.docs ?? undefined;
+        convertedResponse.body = JSON.stringify(getMockBody(httpEndpoint.response, allTypes), undefined, 4);
+    }
+    return convertedResponse;
 }
 
-function convertRequest(httpService: HttpService, httpEndpoint: HttpEndpoint): RequestDefinition {
+function convertRequest(
+    httpService: HttpService,
+    httpEndpoint: HttpEndpoint,
+    allTypes: TypeDefinition[]
+): RequestDefinition {
     let convertedRequest: RequestDefinition = {
         url: {
             host: [BASE_URL_VARIABLE],
@@ -83,7 +111,11 @@ function convertRequest(httpService: HttpService, httpEndpoint: HttpEndpoint): R
         auth: httpService.auth != null ? convertAuth(httpService.auth) : undefined,
     };
     if (httpEndpoint.request != null) {
-        convertedRequest.description = httpEndpoint.request.docs ?? undefined;
+        convertedRequest.description = httpEndpoint.docs ?? undefined;
+        convertedRequest.body = {
+            mode: "raw",
+            raw: JSON.stringify(getMockBody(httpEndpoint.request, allTypes), undefined, 4),
+        };
     }
     return convertedRequest;
 }
