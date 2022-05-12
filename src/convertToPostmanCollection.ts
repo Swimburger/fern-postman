@@ -1,10 +1,10 @@
 import { HttpAuth, HttpEndpoint, HttpMethod, HttpService, IntermediateRepresentation } from "@fern-api/api";
 import {
     CollectionDefinition,
-    ItemGroupDefinition,
     ItemDefinition,
-    RequestDefinition,
+    ItemGroupDefinition,
     RequestAuthDefinition,
+    RequestDefinition,
     ResponseDefinition,
 } from "postman-collection";
 import urlJoin from "url-join";
