@@ -3,8 +3,8 @@ import { parseFernInput } from "fern-api";
 import path from "path";
 import { convertToPostmanCollection } from "../convertToPostmanCollection";
 
-describe("index", () => {
-    it("dummy", async () => {
+describe("Postman Conversion", () => {
+    it("Blog Post API", async () => {
         const testApiDir = path.join(__dirname, "test-api");
         const files = await parseFernInput(path.join(testApiDir, "src"));
         const compilerResult = await compile(files, "Blog API");
