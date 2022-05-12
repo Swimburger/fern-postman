@@ -2046,13 +2046,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/url-join@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "@types/url-join@npm:4.0.1"
-  checksum: 29444b90e165b3970c8ad3fcef1e2de092e72b67e1f3aaff3016eea1697f98a01a28fb4f71f8044e3338a95bd2262327e9299be416efe5297018658760a331b4
-  languageName: node
-  linkType: hard
-
 "@types/yargs-parser@npm:*":
   version: 21.0.0
   resolution: "@types/yargs-parser@npm:21.0.0"
@@ -3712,7 +3705,6 @@ __metadata:
     "@fern-api/compiler": ^0.0.59
     "@types/jest": ^27.5.0
     "@types/postman-collection": ^3.5.7
-    "@types/url-join": ^4.0.1
     depcheck: ^1.4.3
     eslint: ^8.15.0
     fern-api: ^0.0.62
