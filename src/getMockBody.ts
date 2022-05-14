@@ -41,9 +41,7 @@ export function getMockBodyFromType(type: Type, allTypes: TypeDefinition[]): any
                     allTypes
                 );
             },
-            void: () => {
-                union[unionType.discriminantValue] = getMockBodyFromTypeReference(TypeReference.void(), allTypes);
-            },
+            void: () => {},
             _unknown: () => {
                 throw new Error("Encountered unknown typeReference: " + unionValueType);
             },
