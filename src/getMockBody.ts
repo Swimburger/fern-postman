@@ -1,10 +1,6 @@
-import { ContainerType, PrimitiveType, Type, TypeDefinition, TypeReference, WireMessage } from "@fern-api/api";
+import { ContainerType, PrimitiveType, Type, TypeDefinition, TypeReference } from "@fern-api/api";
 
-export function getMockBody(wireMessage: WireMessage, allTypes: TypeDefinition[]): any {
-    return getMockBodyFromType(wireMessage.type, allTypes);
-}
-
-function getMockBodyFromType(type: Type, allTypes: TypeDefinition[]): any {
+export function getMockBodyFromType(type: Type, allTypes: TypeDefinition[]): any {
     if (type._type === "object") {
         let object = {};
         for (const objectProperty of type.properties) {
@@ -69,7 +65,7 @@ function getMockBodyFromTypeReference(typeReference: TypeReference, allTypes: Ty
             },
         });
     } else if (typeReference._type === "void") {
-        return {};
+        return undefined;
     } else if (typeReference._type === "container") {
         return ContainerType._visit<any>(typeReference.container, {
             list: (value) => [getMockBodyFromTypeReference(value, allTypes)],
