@@ -3768,7 +3768,6 @@ __metadata:
     uuid: ^8.3.2
     webpack: ^5.72.1
     webpack-cli: ^4.9.2
-    zod: ^3.16.0
   languageName: unknown
   linkType: soft
 
@@ -7205,7 +7204,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.14.3, zod@npm:^3.16.0":
+"zod@npm:^3.14.3":
   version: 3.16.0
   resolution: "zod@npm:3.16.0"
   checksum: 2879a18e090ee67206375408eb0e506d32f3d6658634aa7f253250c4c223ebaef64dd0d76634a0b0bbd0ea64d26d512d8817a584a0490030b3b308fc62f83d1c
