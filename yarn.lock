@@ -1402,7 +1402,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fern-api/api@npm:0.0.90, @fern-api/api@npm:^0.0.90":
+"@fern-api/api@npm:0.0.90":
   version: 0.0.90
   resolution: "@fern-api/api@npm:0.0.90"
   checksum: 57f707330596cff07ccb30a0a34374d340ffae036799b8669fd057b353907c4f8321e3a445a34131c400f4197713805b636f097ea649d87121ce036db9b00aa7
@@ -1508,6 +1508,13 @@ __metadata:
     js-yaml: ^4.1.0
     zod: ^3.14.3
   checksum: 58c117f653868c6aee3a1e9c706db14346f72f87aa7b83688b5700d9d72d5f3f6aba16a88b714ee5cd82050f06c8022abed65701f38c68eee55075e7746c894c
+  languageName: node
+  linkType: hard
+
+"@fern-fern/ir-model@npm:0.0.13":
+  version: 0.0.13
+  resolution: "@fern-fern/ir-model@npm:0.0.13"
+  checksum: e8a3ac24bc3bed2e6fb16dd3837b2819a3ed4358ded3a2c8ef6e387b65279cbc2a09b63401fca082f1dc807b048a76f0a4df2b4bd9a16e8786b8481390ef64de
   languageName: node
   linkType: hard
 
@@ -3750,8 +3757,8 @@ __metadata:
     "@babel/eslint-parser": ^7.17.0
     "@babel/preset-env": ^7.17.10
     "@babel/preset-typescript": ^7.16.7
-    "@fern-api/api": ^0.0.90
     "@fern-api/compiler": ^0.0.90
+    "@fern-fern/ir-model": 0.0.13
     "@types/jest": ^27.5.0
     "@types/postman-collection": ^3.5.7
     "@types/uuid": ^8.3.4
