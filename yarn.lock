@@ -3906,7 +3906,7 @@ __metadata:
     jest: ^28.1.1
     lint-staged: ^12.4.1
     lodash: ^4.17.21
-    postman-collection: ^4.1.2
+    postman-collection: ^4.1.4
     prettier: ^2.6.2
     simple-progress-webpack-plugin: ^2.0.0
     typescript: ^4.6.4
@@ -5891,7 +5891,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postman-collection@npm:^4.1.2":
+"postman-collection@npm:^4.1.4":
   version: 4.1.4
   resolution: "postman-collection@npm:4.1.4"
   dependencies:
