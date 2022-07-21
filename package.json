@@ -47,7 +47,6 @@
     "@types/lodash": "^4.14.182",
     "lodash": "^4.17.21",
     "postman-collection": "^4.1.4",
-    "url-join": "^4.0.1",
     "uuid": "^8.3.2"
   },
   "packageManager": "yarn@3.2.0"
