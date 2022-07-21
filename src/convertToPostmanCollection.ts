@@ -125,22 +125,20 @@ function convertRequest(
 function getPathArray(basePath: string | undefined | null, endpointPath: HttpPath): string[] {
     const urlParts: string[] = [];
     if (basePath != null) {
-        basePath
-            .split("/")
-            .filter((val) => val.length > 0 && val !== "/")
-            .forEach((splitPart) => urlParts.push(splitPart));
+        splitPathString(basePath).forEach((splitPart) => urlParts.push(splitPart));
     }
     if (endpointPath.head !== "/") {
-        urlParts.push(endpointPath.head);
+        splitPathString(endpointPath.head).forEach((splitPart) => urlParts.push(splitPart));
     }
     endpointPath.parts.forEach((part) => {
         urlParts.push(`:${part.pathParameter}`);
-        part.tail
-            .split("/")
-            .filter((val) => val.length > 0 && val !== "/")
-            .forEach((splitPart) => urlParts.push(splitPart));
+        splitPathString(part.tail).forEach((splitPart) => urlParts.push(splitPart));
     });
     return urlParts;
+}
+
+function splitPathString(path: string) {
+    return path.split("/").filter((val) => val.length > 0 && val !== "/");
 }
 
 function convertHeader(header: HttpHeader, allTypes: TypeDeclaration[]): HeaderDefinition {

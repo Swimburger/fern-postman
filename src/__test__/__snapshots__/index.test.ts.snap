@@ -54,7 +54,7 @@ Object {
               ],
               "path": Array [
                 "posts-service",
-                "/create",
+                "create",
               ],
             },
           },
@@ -106,7 +106,7 @@ Object {
                   ],
                   "path": Array [
                     "posts-service",
-                    "/create",
+                    "create",
                   ],
                 },
               },
