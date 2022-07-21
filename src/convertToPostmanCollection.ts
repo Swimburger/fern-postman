@@ -127,15 +127,17 @@ function getPathArray(basePath: string | undefined | null, endpointPath: HttpPat
     if (basePath != null) {
         basePath
             .split("/")
-            .filter((val) => val.length > 0)
+            .filter((val) => val.length > 0 && val !== "/")
             .forEach((splitPart) => urlParts.push(splitPart));
     }
-    urlParts.push(endpointPath.head);
+    if (endpointPath.head !== "/") {
+        urlParts.push(endpointPath.head);
+    }
     endpointPath.parts.forEach((part) => {
         urlParts.push(`:${part.pathParameter}`);
         part.tail
             .split("/")
-            .filter((val) => val.length > 0)
+            .filter((val) => val.length > 0 && val !== "/")
             .forEach((splitPart) => urlParts.push(splitPart));
     });
     return urlParts;
