@@ -1365,61 +1365,61 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fern-api/config-management-commons@npm:0.0.159":
-  version: 0.0.159
-  resolution: "@fern-api/config-management-commons@npm:0.0.159"
+"@fern-api/config-management-commons@npm:0.0.160":
+  version: 0.0.160
+  resolution: "@fern-api/config-management-commons@npm:0.0.160"
   dependencies:
     zod: ^3.14.3
-  checksum: 3138c00f31b5e5ab26fe150045484c7bbef34d744aa6626d3999939fadcf820ec479496881199e3a4c1f600e3bd0abf4b1dd71791ecd86ada4bbb224d5a5eea1
+  checksum: 3968d3809127f12dc0e3b05e30e4b5631b03b3e696c7359c895e1b8a940538b100d344e62934cdc96fc337faf920be53462848ccf5947878176e4ea912e73e1a
   languageName: node
   linkType: hard
 
-"@fern-api/core-utils@npm:0.0.159":
-  version: 0.0.159
-  resolution: "@fern-api/core-utils@npm:0.0.159"
-  checksum: b12ad30e4e48e06cd2f2fe7d80c17107f4f376f8313cf62d3237afcf5800d4b4fe0f98cd379f11a6e01477972705202e61602d1ed45f3ef7801bc870f8a6084a
+"@fern-api/core-utils@npm:0.0.160":
+  version: 0.0.160
+  resolution: "@fern-api/core-utils@npm:0.0.160"
+  checksum: 0f0f977ca14b1218fac506b629f0116d930520369cf3741528b8f3330147aed52eff78d94aece3b04ea22c3ee17d298168adcecbea52989699a9cee0f272c7dc
   languageName: node
   linkType: hard
 
-"@fern-api/ir-generator@npm:0.0.159":
-  version: 0.0.159
-  resolution: "@fern-api/ir-generator@npm:0.0.159"
+"@fern-api/ir-generator@npm:0.0.160":
+  version: 0.0.160
+  resolution: "@fern-api/ir-generator@npm:0.0.160"
   dependencies:
-    "@fern-api/config-management-commons": 0.0.159
-    "@fern-api/core-utils": 0.0.159
-    "@fern-api/workspace-loader": 0.0.159
-    "@fern-api/yaml-schema": 0.0.159
+    "@fern-api/config-management-commons": 0.0.160
+    "@fern-api/core-utils": 0.0.160
+    "@fern-api/workspace-loader": 0.0.160
+    "@fern-api/yaml-schema": 0.0.160
     "@fern-fern/ir-model": 0.0.53
     lodash: ^4.17.21
-  checksum: dfd6f4bd7fcfadade54d2bfd751d5baa6485aaff9b97967d9fe632cce9a685ca5d21b1974b4970264be24067a1f2c72fa78531fee73650d873fdfc4b1daa6954
+  checksum: af3d9b817696f16060a9975c3a888575bdcdec8ec8e2c64c1a54d8bb81e4c30dc732e0f46a21f5b2732b0f4d33bdb6091869ef2d77c7c9fa13b12d57f85eaaa3
   languageName: node
   linkType: hard
 
-"@fern-api/workspace-loader@npm:0.0.159, @fern-api/workspace-loader@npm:^0.0.159":
-  version: 0.0.159
-  resolution: "@fern-api/workspace-loader@npm:0.0.159"
+"@fern-api/workspace-loader@npm:0.0.160, @fern-api/workspace-loader@npm:^0.0.160":
+  version: 0.0.160
+  resolution: "@fern-api/workspace-loader@npm:0.0.160"
   dependencies:
-    "@fern-api/config-management-commons": 0.0.159
-    "@fern-api/core-utils": 0.0.159
-    "@fern-api/yaml-schema": 0.0.159
+    "@fern-api/config-management-commons": 0.0.160
+    "@fern-api/core-utils": 0.0.160
+    "@fern-api/yaml-schema": 0.0.160
     glob: ^7.2.0
     glob-promise: ^4.2.2
     js-yaml: ^4.1.0
     zod: ^3.14.3
-  checksum: 71db1e9fe75e70206db826a7b5b82848c4562040491704d481f8845f019d0c20061e0f4d0465401f92499e8ca53d57d91476ea57caadc282d9d65955affbb41b
+  checksum: 75c88cae5e1c5f5ee80b61c5bbcfe2bf43995eccd3e2f058ce270805644fff2e658aa4cbc3bc9030c9a9ca5aa89a1221eecac75c7aeca4530dc13fe907f25433
   languageName: node
   linkType: hard
 
-"@fern-api/yaml-schema@npm:0.0.159":
-  version: 0.0.159
-  resolution: "@fern-api/yaml-schema@npm:0.0.159"
+"@fern-api/yaml-schema@npm:0.0.160":
+  version: 0.0.160
+  resolution: "@fern-api/yaml-schema@npm:0.0.160"
   dependencies:
-    "@fern-api/core-utils": 0.0.159
+    "@fern-api/core-utils": 0.0.160
     "@fern-fern/ir-model": 0.0.53
     prettier: ^2.7.1
     zod: ^3.14.3
     zod-to-json-schema: 3.14.1
-  checksum: 509d659700fb4a870c11ebd55734d43f224e84ddb949feab15bfde9d10e485cc96059b1f2c52ab88d95a31085c07f91985dce50f534ce2090402b438b5d37225
+  checksum: f353a9ff04a5227abfd0cafd83253b98e1483a168427ccfea199d26f23ec2154c6da0eb26c3121981e2d62511dedfaa2bb5105bdde3c143087c25cfe02a0d084
   languageName: node
   linkType: hard
 
@@ -3611,8 +3611,8 @@ __metadata:
     "@babel/eslint-parser": ^7.17.0
     "@babel/preset-env": ^7.18.2
     "@babel/preset-typescript": ^7.17.12
-    "@fern-api/ir-generator": 0.0.159
-    "@fern-api/workspace-loader": ^0.0.159
+    "@fern-api/ir-generator": 0.0.160
+    "@fern-api/workspace-loader": ^0.0.160
     "@fern-fern/generator-logging-api-client": ^0.0.25
     "@fern-fern/ir-model": ^0.0.53
     "@fern-fern/postman-collection-api-client": ^0.0.15
