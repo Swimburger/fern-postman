@@ -1446,10 +1446,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fern-fern/ir-model@npm:0.0.53, @fern-fern/ir-model@npm:^0.0.53":
+"@fern-fern/ir-model@npm:0.0.53":
   version: 0.0.53
   resolution: "@fern-fern/ir-model@npm:0.0.53"
   checksum: df62870db32fef91c78de8f21610d39f506c071e8f236b742004a15d58558e4dc8284b0c3be07e65375b35cec069f255914ca4867a315e5bfd471f615d5ca786
+  languageName: node
+  linkType: hard
+
+"@fern-fern/ir-model@npm:^0.0.55":
+  version: 0.0.55
+  resolution: "@fern-fern/ir-model@npm:0.0.55"
+  checksum: 9ee25540f040da96aed0009e3dcec24cc1768946420363e89887a4fed0babe03ca47eb3cc4f41321241215a291545b62f61afc40f38e18edde01e656596c95f2
   languageName: node
   linkType: hard
 
@@ -1461,6 +1468,13 @@ __metadata:
     "@types/url-join": 4.0.1
     url-join: 4.0.1
   checksum: 1ddfe0cb8584d794ff735a0a1704169c5b04968171f40deedb697a73217c1c18ab97c4f8260329ce4ddc0f961670d5059ee30319e3e353fe0db5bca40e3240c9
+  languageName: node
+  linkType: hard
+
+"@fern-fern/postman-generator-config-api-model@npm:0.0.3":
+  version: 0.0.3
+  resolution: "@fern-fern/postman-generator-config-api-model@npm:0.0.3"
+  checksum: 62d580398231319015ed94d838e869ed4c94bde6213c711be4874ef6138ff15bc64e2673a753a599ad940c6ddc5c948cc62bb7ce8111b5fdd51f8c761a766fef
   languageName: node
   linkType: hard
 
@@ -3626,8 +3640,9 @@ __metadata:
     "@fern-api/ir-generator": 0.0.159
     "@fern-api/workspace-configuration": 0.0.159
     "@fern-fern/generator-logging-api-client": ^0.0.25
-    "@fern-fern/ir-model": ^0.0.53
+    "@fern-fern/ir-model": ^0.0.55
     "@fern-fern/postman-collection-api-client": ^0.0.15
+    "@fern-fern/postman-generator-config-api-model": 0.0.3
     "@types/jest": ^27.5.0
     "@types/lodash": ^4.14.182
     "@types/postman-collection": ^3.5.7

@@ -9,27 +9,40 @@ import {
     PostmanMethod,
     PostmanRequest,
     PostmanRequestAuth,
+    PostmanVariable,
 } from "@fern-fern/postman-collection-api-client/model/collection";
+import { PostmanCustomConfig } from "@fern-fern/postman-generator-config-api-model";
 import { getMockBodyFromTypeReference } from "./getMockBody";
 
 const ORIGIN_VARIABLE_NAME = "origin";
 const ORIGIN_VARIABLE = `{{${ORIGIN_VARIABLE_NAME}}}`;
 const ORIGIN_DEFAULT_VAULE = "http://localhost:8080";
 
-export function convertToPostmanCollection(ir: IntermediateRepresentation): PostmanCollectionSchema {
+export function convertToPostmanCollection(
+    ir: IntermediateRepresentation,
+    customConfig: PostmanCustomConfig
+): PostmanCollectionSchema {
     const id = ir.workspaceName ?? "Untitled API";
+    let variables: PostmanVariable[] = Object.keys(customConfig.variables).map((variable) => {
+        return {
+            key: variable,
+            value: customConfig.variables[variable] ?? "",
+            type: "string",
+        };
+    });
+    if (customConfig.variables["origin"] == null) {
+        variables.push({
+            key: ORIGIN_VARIABLE_NAME,
+            value: ORIGIN_DEFAULT_VAULE,
+            type: "string",
+        });
+    }
     return {
         info: {
             name: id,
             schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         },
-        variable: [
-            {
-                key: ORIGIN_VARIABLE_NAME,
-                value: ORIGIN_DEFAULT_VAULE,
-                type: "string",
-            },
-        ],
+        variable: variables,
         item: getCollectionItems(ir),
     };
 }

@@ -3,12 +3,12 @@ import { IntermediateRepresentation } from "@fern-fern/ir-model";
 import { GeneratorConfig } from "@fern-fern/ir-model/generators";
 import { CollectionId, WorkspaceId } from "@fern-fern/postman-collection-api-client/model";
 import { CollectionService } from "@fern-fern/postman-collection-api-client/services";
+import { PostmanCustomConfig, PostmanPublishConfig } from "@fern-fern/postman-generator-config-api-model";
 import { readFile, writeFile } from "fs/promises";
 import path from "path";
 import { Collection, CollectionDefinition } from "postman-collection";
 import { convertToPostmanCollection } from "./convertToPostmanCollection";
 import { GeneratorLoggingWrapper } from "./generatorLoggingWrapper";
-import { getPublishConfig, PublishConfig } from "./getPublishConfig";
 
 const COLLECTION_OUTPUT_FILENAME = "collection.json";
 
@@ -20,7 +20,7 @@ export async function writePostmanCollection(pathToConfig: string): Promise<void
         throw new Error("Output directory is not specified.");
     }
 
-    const publishConfig = getPublishConfig(config);
+    const customConfig = getCustomConfig(config);
 
     const generatorLoggingClient = new GeneratorLoggingWrapper(config);
 
@@ -32,14 +32,14 @@ export async function writePostmanCollection(pathToConfig: string): Promise<void
         );
 
         const ir = await loadIntermediateRepresentation(config.irFilepath);
-        const collectionDefinition = convertToPostmanCollection(ir);
+        const collectionDefinition = convertToPostmanCollection(ir, customConfig);
         await writeFile(
             path.join(config.output.path, COLLECTION_OUTPUT_FILENAME),
             JSON.stringify(collectionDefinition, undefined, 4)
         );
 
-        if (publishConfig != null) {
-            publishCollection(publishConfig, collectionDefinition);
+        if (customConfig.publish != null) {
+            publishCollection(customConfig.publish, collectionDefinition);
         }
 
         await generatorLoggingClient.sendUpdate(GeneratorUpdate.exitStatusUpdate(ExitStatusUpdate.successful()));
@@ -54,11 +54,11 @@ export async function writePostmanCollection(pathToConfig: string): Promise<void
     }
 }
 
-async function publishCollection(publishConfig: PublishConfig, collectionDefinition: CollectionDefinition) {
+async function publishCollection(publishConfig: PostmanPublishConfig, collectionDefinition: CollectionDefinition) {
     const collectionService = new CollectionService({
         origin: "https://api.getpostman.com",
         headers: {
-            "X-API-Key": publishConfig.apiKey,
+            "X-API-Key": publishConfig.token,
         },
     });
     const workspace = publishConfig.workspaceId != null ? WorkspaceId.of(publishConfig.workspaceId) : undefined;
@@ -91,4 +91,8 @@ async function publishCollection(publishConfig: PublishConfig, collectionDefinit
 
 async function loadIntermediateRepresentation(pathToFile: string): Promise<IntermediateRepresentation> {
     return JSON.parse((await readFile(pathToFile)).toString());
+}
+
+function getCustomConfig(config: GeneratorConfig): PostmanCustomConfig {
+    return config.customConfig as unknown as PostmanCustomConfig;
 }

@@ -1,4 +1,4 @@
 {
-  "workspaces": ["postman-collection-api"],
+  "workspaces": ["postman-collection-api", "fern-postman-config-api"],
   "organization": "fern"
 }
