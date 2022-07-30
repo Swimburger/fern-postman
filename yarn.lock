@@ -3643,7 +3643,7 @@ __metadata:
     uuid: ^8.3.2
     webpack: ^5.72.1
     webpack-cli: ^4.9.2
-    zod: ^3.17.10
+    zod: ^3.14.3
   languageName: unknown
   linkType: soft
 
@@ -6892,7 +6892,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.14.3, zod@npm:^3.17.10":
+"zod@npm:^3.14.3":
   version: 3.17.10
   resolution: "zod@npm:3.17.10"
   checksum: 5de630b8eceda3de211cce0a734b629f8c4ca4bc887127b0ebd57e9c9be23204725e60adf2faf1c5ccb9b660c7588a8b04f60dfda1ed8e67a789e93c15f838f1
