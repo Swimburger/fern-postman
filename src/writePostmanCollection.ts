@@ -22,10 +22,7 @@ export async function writePostmanCollection(pathToConfig: string): Promise<void
         throw new Error("Output directory is not specified.");
     }
 
-    const postmanGeneratorConfig = await validateSchema<PostmanGeneratorConfigSchema>(
-        PostmanGeneratorConfigSchema,
-        config.customConfig
-    );
+    const postmanGeneratorConfig = await validateSchema(PostmanGeneratorConfigSchema, config.customConfig);
 
     const generatorLoggingClient = new GeneratorLoggingWrapper(config);
 
