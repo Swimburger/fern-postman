@@ -68,3 +68,4 @@ workflows:
             - check
           context:
             - docker-hub
+            - npm
