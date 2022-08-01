@@ -1374,7 +1374,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fern-api/config-management-commons@npm:^0.0.170":
+"@fern-api/config-management-commons@npm:^0.0.170-9-g0e3d1704":
   version: 0.0.170
   resolution: "@fern-api/config-management-commons@npm:0.0.170"
   dependencies:
@@ -3620,7 +3620,7 @@ __metadata:
     "@babel/eslint-parser": ^7.17.0
     "@babel/preset-env": ^7.18.2
     "@babel/preset-typescript": ^7.17.12
-    "@fern-api/config-management-commons": ^0.0.170
+    "@fern-api/config-management-commons": ^0.0.170-9-g0e3d1704
     "@fern-api/ir-generator": 0.0.160
     "@fern-api/workspace-loader": ^0.0.160
     "@fern-fern/generator-logging-api-client": ^0.0.25

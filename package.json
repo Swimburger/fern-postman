@@ -42,7 +42,7 @@
     "webpack-cli": "^4.9.2"
   },
   "dependencies": {
-    "@fern-api/config-management-commons": "^0.0.171",
+    "@fern-api/config-management-commons": "^0.0.170-9-g0e3d1704",
     "@fern-fern/generator-logging-api-client": "^0.0.25",
     "@fern-fern/ir-model": "^0.0.53",
     "@fern-fern/postman-collection-api-client": "0.0.18",
