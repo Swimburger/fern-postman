@@ -5,6 +5,7 @@ types:
     properties:
       info: PostmanCollectionInfo
       item: list<PostmanCollectionServiceItem>
+      auth: optional<PostmanRequestAuth>
       variable: list<PostmanVariable>
 
   PostmanVariable:

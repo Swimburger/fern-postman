@@ -37,7 +37,7 @@ export async function writePostmanCollection(pathToConfig: string): Promise<void
         );
 
         if (postmanGeneratorConfig?.publishing != null) {
-            await publishCollection(postmanGeneratorConfig.publishing, collectionDefinition);
+            await publishCollection({ publishConfig: postmanGeneratorConfig.publishing, collectionDefinition });
         }
 
         await generatorLoggingClient.sendUpdate(GeneratorUpdate.exitStatusUpdate(ExitStatusUpdate.successful()));
@@ -52,7 +52,13 @@ export async function writePostmanCollection(pathToConfig: string): Promise<void
     }
 }
 
-async function publishCollection(publishConfig: PublishConfigSchema, collectionDefinition: CollectionDefinition) {
+async function publishCollection({
+    publishConfig,
+    collectionDefinition,
+}: {
+    publishConfig: PublishConfigSchema;
+    collectionDefinition: CollectionDefinition;
+}) {
     const collectionService = new CollectionService({
         origin: "https://api.getpostman.com",
         headers: {

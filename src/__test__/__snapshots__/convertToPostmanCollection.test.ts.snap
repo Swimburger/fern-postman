@@ -2,6 +2,16 @@
 
 exports[`convertToOpenApi all-auth 1`] = `
 Object {
+  "auth": Object {
+    "bearer": Array [
+      Object {
+        "key": "token",
+        "type": "string",
+        "value": "{{token}}",
+      },
+    ],
+    "type": "bearer",
+  },
   "info": Object {
     "name": "all-auth",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
@@ -12,16 +22,7 @@ Object {
         Object {
           "name": "createPost",
           "request": Object {
-            "auth": Object {
-              "bearer": Array [
-                Object {
-                  "key": "token",
-                  "type": "string",
-                  "value": "{{token}}",
-                },
-              ],
-              "type": "bearer",
-            },
+            "auth": undefined,
             "body": Object {
               "mode": "raw",
               "options": Object {
@@ -64,16 +65,7 @@ Object {
               "description": undefined,
               "name": "Successful createPost",
               "originalRequest": Object {
-                "auth": Object {
-                  "bearer": Array [
-                    Object {
-                      "key": "token",
-                      "type": "string",
-                      "value": "{{token}}",
-                    },
-                  ],
-                  "type": "bearer",
-                },
+                "auth": undefined,
                 "body": Object {
                   "mode": "raw",
                   "options": Object {
@@ -114,16 +106,7 @@ Object {
         Object {
           "name": "getPost",
           "request": Object {
-            "auth": Object {
-              "bearer": Array [
-                Object {
-                  "key": "token",
-                  "type": "string",
-                  "value": "{{token}}",
-                },
-              ],
-              "type": "bearer",
-            },
+            "auth": undefined,
             "body": undefined,
             "description": undefined,
             "header": Array [
@@ -158,16 +141,7 @@ Object {
               "description": undefined,
               "name": "Successful getPost",
               "originalRequest": Object {
-                "auth": Object {
-                  "bearer": Array [
-                    Object {
-                      "key": "token",
-                      "type": "string",
-                      "value": "{{token}}",
-                    },
-                  ],
-                  "type": "bearer",
-                },
+                "auth": undefined,
                 "body": undefined,
                 "description": undefined,
                 "header": Array [
@@ -205,16 +179,6 @@ Object {
     },
     Object {
       "key": "token",
-      "type": "string",
-      "value": "",
-    },
-    Object {
-      "key": "username",
-      "type": "string",
-      "value": "",
-    },
-    Object {
-      "key": "password",
       "type": "string",
       "value": "",
     },
@@ -229,8 +193,23 @@ Object {
 
 exports[`convertToOpenApi any-auth 1`] = `
 Object {
+  "auth": Object {
+    "basic": Array [
+      Object {
+        "key": "username",
+        "type": "string",
+        "value": "{{username}}",
+      },
+      Object {
+        "key": "password",
+        "type": "string",
+        "value": "{{password}}",
+      },
+    ],
+    "type": "basic",
+  },
   "info": Object {
-    "name": "all-auth",
+    "name": "any-auth",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
   },
   "item": Array [
@@ -239,16 +218,7 @@ Object {
         Object {
           "name": "createPost",
           "request": Object {
-            "auth": Object {
-              "bearer": Array [
-                Object {
-                  "key": "token",
-                  "type": "string",
-                  "value": "{{token}}",
-                },
-              ],
-              "type": "bearer",
-            },
+            "auth": undefined,
             "body": Object {
               "mode": "raw",
               "options": Object {
@@ -291,16 +261,7 @@ Object {
               "description": undefined,
               "name": "Successful createPost",
               "originalRequest": Object {
-                "auth": Object {
-                  "bearer": Array [
-                    Object {
-                      "key": "token",
-                      "type": "string",
-                      "value": "{{token}}",
-                    },
-                  ],
-                  "type": "bearer",
-                },
+                "auth": undefined,
                 "body": Object {
                   "mode": "raw",
                   "options": Object {
@@ -341,16 +302,7 @@ Object {
         Object {
           "name": "getPost",
           "request": Object {
-            "auth": Object {
-              "bearer": Array [
-                Object {
-                  "key": "token",
-                  "type": "string",
-                  "value": "{{token}}",
-                },
-              ],
-              "type": "bearer",
-            },
+            "auth": undefined,
             "body": undefined,
             "description": undefined,
             "header": Array [
@@ -385,16 +337,7 @@ Object {
               "description": undefined,
               "name": "Successful getPost",
               "originalRequest": Object {
-                "auth": Object {
-                  "bearer": Array [
-                    Object {
-                      "key": "token",
-                      "type": "string",
-                      "value": "{{token}}",
-                    },
-                  ],
-                  "type": "bearer",
-                },
+                "auth": undefined,
                 "body": undefined,
                 "description": undefined,
                 "header": Array [
@@ -429,11 +372,6 @@ Object {
       "key": "origin",
       "type": "string",
       "value": "http://localhost:8080",
-    },
-    Object {
-      "key": "token",
-      "type": "string",
-      "value": "",
     },
     Object {
       "key": "username",
@@ -456,6 +394,7 @@ Object {
 
 exports[`convertToOpenApi test-api 1`] = `
 Object {
+  "auth": undefined,
   "info": Object {
     "name": "blog-post-api",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",

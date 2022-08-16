@@ -2,7 +2,13 @@ import { ContainerType, PrimitiveType, Type, TypeDeclaration, TypeReference } fr
 import { isEqual, noop } from "lodash";
 import uuid from "uuid";
 
-export function getMockBodyFromTypeReference(typeReference: TypeReference, allTypes: TypeDeclaration[]): unknown {
+export function getMockBodyFromTypeReference({
+    typeReference,
+    allTypes,
+}: {
+    typeReference: TypeReference;
+    allTypes: TypeDeclaration[];
+}): unknown {
     return TypeReference._visit(typeReference, {
         primitive: (primitive) =>
             PrimitiveType._visit<any>(primitive, {
@@ -20,16 +26,18 @@ export function getMockBodyFromTypeReference(typeReference: TypeReference, allTy
         void: () => undefined,
         container: (container) =>
             ContainerType._visit<any>(container, {
-                list: (value) => [getMockBodyFromTypeReference(value, allTypes)],
+                list: (value) => [getMockBodyFromTypeReference({ typeReference: value, allTypes })],
                 map: (value) => {
                     const result: Record<string, unknown> = {};
-                    const mockKey = getMockBodyFromTypeReference(value.keyType, allTypes) as string | number;
-                    const mockValue = getMockBodyFromTypeReference(value.valueType, allTypes);
+                    const mockKey = getMockBodyFromTypeReference({ typeReference: value.keyType, allTypes }) as
+                        | string
+                        | number;
+                    const mockValue = getMockBodyFromTypeReference({ typeReference: value.valueType, allTypes });
                     result[mockKey] = mockValue;
                     return result;
                 },
-                set: (value) => [getMockBodyFromTypeReference(value, allTypes)],
-                optional: (value) => getMockBodyFromTypeReference(value, allTypes),
+                set: (value) => [getMockBodyFromTypeReference({ typeReference: value, allTypes })],
+                optional: (value) => getMockBodyFromTypeReference({ typeReference: value, allTypes }),
                 _unknown: () => {
                     throw new Error("Encountered unknown wireMessage: " + typeReference._type);
                 },
@@ -56,14 +64,14 @@ function getMockBodyFromType(type: Type, allTypes: TypeDeclaration[]): unknown {
         object: (objectDeclaration) => {
             const object = {};
             for (const objectProperty of objectDeclaration.properties) {
-                object[objectProperty.name.wireValue] = getMockBodyFromTypeReference(
-                    objectProperty.valueType,
-                    allTypes
-                );
+                object[objectProperty.name.wireValue] = getMockBodyFromTypeReference({
+                    typeReference: objectProperty.valueType,
+                    allTypes,
+                });
             }
             return object;
         },
-        alias: ({ aliasOf }) => getMockBodyFromTypeReference(aliasOf, allTypes),
+        alias: ({ aliasOf }) => getMockBodyFromTypeReference({ typeReference: aliasOf, allTypes }),
         enum: ({ values }) => {
             const firstValue = values[0];
             if (firstValue == null) {
@@ -83,23 +91,26 @@ function getMockBodyFromType(type: Type, allTypes: TypeDeclaration[]): unknown {
 
             TypeReference._visit(firstUnionType.valueType, {
                 container: (value) => {
-                    union[firstUnionType.discriminantValue.wireValue] = getMockBodyFromTypeReference(
-                        TypeReference.container(value),
-                        allTypes
-                    );
+                    union[firstUnionType.discriminantValue.wireValue] = getMockBodyFromTypeReference({
+                        typeReference: TypeReference.container(value),
+                        allTypes,
+                    });
                 },
                 named: (value) => {
                     union = {
                         ...union,
                         // TODO this doesn't support named aliases of primitive types
-                        ...(getMockBodyFromTypeReference(TypeReference.named(value), allTypes) as any),
+                        ...(getMockBodyFromTypeReference({
+                            typeReference: TypeReference.named(value),
+                            allTypes,
+                        }) as any),
                     };
                 },
                 primitive: (value) => {
-                    union[firstUnionType.discriminantValue.wireValue] = getMockBodyFromTypeReference(
-                        TypeReference.primitive(value),
-                        allTypes
-                    );
+                    union[firstUnionType.discriminantValue.wireValue] = getMockBodyFromTypeReference({
+                        typeReference: TypeReference.primitive(value),
+                        allTypes,
+                    });
                 },
                 void: noop,
                 unknown: noop,

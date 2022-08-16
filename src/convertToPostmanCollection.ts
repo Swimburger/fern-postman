@@ -26,6 +26,10 @@ const ORIGIN_DEFAULT_VAULE = "http://localhost:8080";
 
 export function convertToPostmanCollection(ir: IntermediateRepresentation): PostmanCollectionSchema {
     const id = ir.apiName;
+
+    const authSchemes = filterAuthSchemes(ir.auth);
+    const authHeaders = getAuthHeaders(authSchemes);
+
     return {
         info: {
             name: id,
@@ -37,18 +41,49 @@ export function convertToPostmanCollection(ir: IntermediateRepresentation): Post
                 value: ORIGIN_DEFAULT_VAULE,
                 type: "string",
             },
-            ...ir.auth.schemes.flatMap(getVariablesForAuthScheme),
+            ...authSchemes.flatMap(getVariablesForAuthScheme),
         ],
-        item: getCollectionItems(ir),
+        auth: convertAuth(authSchemes),
+        item: getCollectionItems({ ir, authHeaders }),
     };
 }
 
-function getCollectionItems(ir: IntermediateRepresentation): PostmanCollectionServiceItem[] {
+function filterAuthSchemes(auth: ApiAuth): AuthScheme[] {
+    let hasSeenAuthorizationHeader = false;
+    return auth.schemes.filter((scheme) => {
+        return AuthScheme._visit(scheme, {
+            basic: () => {
+                if (hasSeenAuthorizationHeader) {
+                    return false;
+                }
+                return (hasSeenAuthorizationHeader = true);
+            },
+            bearer: () => {
+                if (hasSeenAuthorizationHeader) {
+                    return false;
+                }
+                return (hasSeenAuthorizationHeader = true);
+            },
+            header: () => true,
+            _unknown: () => {
+                throw new Error("Unknown auth scheme: " + scheme._type);
+            },
+        });
+    });
+}
+
+function getCollectionItems({
+    ir,
+    authHeaders,
+}: {
+    ir: IntermediateRepresentation;
+    authHeaders: PostmanHeader[];
+}): PostmanCollectionServiceItem[] {
     const serviceItems: PostmanCollectionServiceItem[] = [];
     for (const httpService of ir.services.http) {
         const endpointItems: PostmanCollectionEndpointItem[] = [];
         for (const httpEndpoint of httpService.endpoints) {
-            endpointItems.push(convertEndpoint(ir.auth, httpEndpoint, httpService, ir.types));
+            endpointItems.push(convertEndpoint({ authHeaders, httpEndpoint, httpService, allTypes: ir.types }));
         }
         const serviceItem: PostmanCollectionServiceItem = {
             name: httpService.name.name,
@@ -59,26 +94,35 @@ function getCollectionItems(ir: IntermediateRepresentation): PostmanCollectionSe
     return serviceItems;
 }
 
-function convertEndpoint(
-    auth: ApiAuth,
-    httpEndpoint: HttpEndpoint,
-    httpService: HttpService,
-    allTypes: TypeDeclaration[]
-): PostmanCollectionEndpointItem {
-    const convertedRequest = convertRequest(auth, httpService, httpEndpoint, allTypes);
+function convertEndpoint({
+    authHeaders,
+    httpEndpoint,
+    httpService,
+    allTypes,
+}: {
+    authHeaders: PostmanHeader[];
+    httpEndpoint: HttpEndpoint;
+    httpService: HttpService;
+    allTypes: TypeDeclaration[];
+}): PostmanCollectionEndpointItem {
+    const convertedRequest = convertRequest({ authHeaders, httpService, httpEndpoint, allTypes });
     return {
         name: httpEndpoint.id,
         request: convertedRequest,
-        response: [convertResponse(httpEndpoint, allTypes, convertedRequest)],
+        response: [convertResponse({ httpEndpoint, allTypes, convertedRequest })],
     };
 }
 
-function convertResponse(
-    httpEndpoint: HttpEndpoint,
-    allTypes: TypeDeclaration[],
-    convertedRequest: PostmanRequest
-): PostmanExampleResponse {
-    const responseBody = getMockBodyFromTypeReference(httpEndpoint.response.type, allTypes);
+function convertResponse({
+    httpEndpoint,
+    allTypes,
+    convertedRequest,
+}: {
+    httpEndpoint: HttpEndpoint;
+    allTypes: TypeDeclaration[];
+    convertedRequest: PostmanRequest;
+}): PostmanExampleResponse {
+    const responseBody = getMockBodyFromTypeReference({ typeReference: httpEndpoint.response.type, allTypes });
     return {
         name: "Successful " + httpEndpoint.id,
         code: 200,
@@ -89,17 +133,20 @@ function convertResponse(
     };
 }
 
-function convertRequest(
-    auth: ApiAuth,
-    httpService: HttpService,
-    httpEndpoint: HttpEndpoint,
-    allTypes: TypeDeclaration[]
-): PostmanRequest {
+function convertRequest({
+    authHeaders,
+    httpService,
+    httpEndpoint,
+    allTypes,
+}: {
+    authHeaders: PostmanHeader[];
+    httpService: HttpService;
+    httpEndpoint: HttpEndpoint;
+    allTypes: TypeDeclaration[];
+}): PostmanRequest {
     const hostArr = [getReferenceToVariable(ORIGIN_VARIABLE_NAME)];
-    const pathArr = getPathArray(httpService.basePath, httpEndpoint.path);
+    const pathArr = getPathArray({ basePath: httpService.basePath, endpointPath: httpEndpoint.path });
     const queryParams = getQueryParams(httpEndpoint.queryParameters);
-
-    const { requestAuth, authHeaders } = convertAuth(auth);
 
     let rawUrl = [...hostArr, ...pathArr].join("/");
     if (queryParams.length > 0) {
@@ -116,18 +163,18 @@ function convertRequest(
         },
         header: [
             ...authHeaders,
-            ...httpService.headers.map((header) => convertHeader(header, allTypes)),
-            ...httpEndpoint.headers.map((header) => convertHeader(header, allTypes)),
+            ...httpService.headers.map((header) => convertHeader({ header, allTypes })),
+            ...httpEndpoint.headers.map((header) => convertHeader({ header, allTypes })),
         ],
         method: convertHttpMethod(httpEndpoint.method),
-        auth: requestAuth,
+        auth: undefined, // inherit
         body:
             httpEndpoint.request.type._type === "void"
                 ? undefined
                 : {
                       mode: "raw",
                       raw: JSON.stringify(
-                          getMockBodyFromTypeReference(httpEndpoint.request.type, allTypes),
+                          getMockBodyFromTypeReference({ typeReference: httpEndpoint.request.type, allTypes }),
                           undefined,
                           4
                       ),
@@ -140,7 +187,13 @@ function convertRequest(
     };
 }
 
-function getPathArray(basePath: string | undefined | null, endpointPath: HttpPath): string[] {
+function getPathArray({
+    basePath,
+    endpointPath,
+}: {
+    basePath: string | undefined | null;
+    endpointPath: HttpPath;
+}): string[] {
     const urlParts: string[] = [];
     if (basePath != null) {
         splitPathString(basePath).forEach((splitPart) => urlParts.push(splitPart));
@@ -167,8 +220,8 @@ function splitPathString(path: string) {
     return path.split("/").filter((val) => val.length > 0 && val !== "/");
 }
 
-function convertHeader(header: HttpHeader, allTypes: TypeDeclaration[]): PostmanHeader {
-    const value = getMockBodyFromTypeReference(header.valueType, allTypes);
+function convertHeader({ header, allTypes }: { header: HttpHeader; allTypes: TypeDeclaration[] }): PostmanHeader {
+    const value = getMockBodyFromTypeReference({ typeReference: header.valueType, allTypes });
     return {
         key: header.name.wireValue,
         description: header.docs ?? undefined,
@@ -190,61 +243,62 @@ function convertHttpMethod(httpMethod: HttpMethod): PostmanMethod {
     });
 }
 
-interface AuthInfo {
-    requestAuth: PostmanRequestAuth | undefined;
-    authHeaders: PostmanHeader[];
-}
-
-function convertAuth(auth: ApiAuth): AuthInfo {
-    const authInfo: AuthInfo = {
-        requestAuth: undefined,
-        authHeaders: [],
-    };
-
-    for (const scheme of auth.schemes) {
-        AuthScheme._visit(scheme, {
-            basic: () => {
-                if (authInfo.requestAuth == null) {
-                    authInfo.requestAuth = PostmanRequestAuth.basic([
-                        {
-                            key: "username",
-                            value: getReferenceToVariable(BASIC_AUTH_USERNAME_VARIABLE),
-                            type: "string",
-                        },
-                        {
-                            key: "password",
-                            value: getReferenceToVariable(BASIC_AUTH_PASSWORD_VARIABLE),
-                            type: "string",
-                        },
-                    ]);
-                }
-            },
-            bearer: () => {
-                if (authInfo.requestAuth == null) {
-                    authInfo.requestAuth = PostmanRequestAuth.bearer([
-                        {
-                            key: "token",
-                            value: getReferenceToVariable(BEARER_AUTH_TOKEN_VARIABLE),
-                            type: "string",
-                        },
-                    ]);
-                }
-            },
-            header: (header) => {
-                authInfo.authHeaders.push({
-                    key: header.name.wireValue,
-                    value: getReferenceToVariable(getVariableForAuthHeader(header)),
-                    type: "string",
-                    description: header.docs,
-                });
-            },
+function convertAuth(schemes: AuthScheme[]): PostmanRequestAuth | undefined {
+    for (const scheme of schemes) {
+        const auth = AuthScheme._visit<PostmanRequestAuth | undefined>(scheme, {
+            basic: () =>
+                PostmanRequestAuth.basic([
+                    {
+                        key: "username",
+                        value: getReferenceToVariable(BASIC_AUTH_USERNAME_VARIABLE),
+                        type: "string",
+                    },
+                    {
+                        key: "password",
+                        value: getReferenceToVariable(BASIC_AUTH_PASSWORD_VARIABLE),
+                        type: "string",
+                    },
+                ]),
+            bearer: () =>
+                PostmanRequestAuth.bearer([
+                    {
+                        key: "token",
+                        value: getReferenceToVariable(BEARER_AUTH_TOKEN_VARIABLE),
+                        type: "string",
+                    },
+                ]),
+            header: () => undefined,
             _unknown: () => {
                 throw new Error("Unknown auth scheme: " + scheme._type);
             },
         });
+
+        if (auth != null) {
+            return auth;
+        }
     }
 
-    return authInfo;
+    return undefined;
+}
+
+function getAuthHeaders(schemes: AuthScheme[]): PostmanHeader[] {
+    return schemes.flatMap((scheme) =>
+        AuthScheme._visit(scheme, {
+            basic: () => [],
+            bearer: () => [],
+            header: (header) => [
+                {
+                    key: header.name.wireValue,
+                    value: getReferenceToVariable(getVariableForAuthHeader(header)),
+                    type: "string",
+                    description: header.docs,
+                },
+            ],
+            _unknown: () => {
+                throw new Error("Unknown auth scheme: " + scheme._type);
+            },
+        })
+    );
 }
 
 const BASIC_AUTH_USERNAME_VARIABLE = "username";

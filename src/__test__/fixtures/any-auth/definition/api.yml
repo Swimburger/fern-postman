@@ -1,8 +1,8 @@
-name: all-auth
+name: any-auth
 auth:
   any:
-    - bearer
     - basic
+    - bearer
     - HeaderAuth
 auth-schemes:
   HeaderAuth:
