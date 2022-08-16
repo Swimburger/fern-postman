@@ -1,5 +1,12 @@
-import { IntermediateRepresentation, TypeDeclaration } from "@fern-fern/ir-model";
-import { HttpAuth, HttpEndpoint, HttpHeader, HttpMethod, HttpPath, HttpService } from "@fern-fern/ir-model/services";
+import { ApiAuth, AuthScheme, IntermediateRepresentation, TypeDeclaration } from "@fern-fern/ir-model";
+import {
+    HttpEndpoint,
+    HttpHeader,
+    HttpMethod,
+    HttpPath,
+    HttpService,
+    QueryParameter,
+} from "@fern-fern/ir-model/services";
 import {
     PostmanCollectionEndpointItem,
     PostmanCollectionSchema,
@@ -7,17 +14,18 @@ import {
     PostmanExampleResponse,
     PostmanHeader,
     PostmanMethod,
+    PostmanQueryParameter,
     PostmanRequest,
     PostmanRequestAuth,
-} from "@fern-fern/postman-collection-api-client/model/collection";
+    PostmanVariable,
+} from "@fern-fern/postman-collection-api-client/model/collection/collection";
 import { getMockBodyFromTypeReference } from "./getMockBody";
 
 const ORIGIN_VARIABLE_NAME = "origin";
-const ORIGIN_VARIABLE = `{{${ORIGIN_VARIABLE_NAME}}}`;
 const ORIGIN_DEFAULT_VAULE = "http://localhost:8080";
 
 export function convertToPostmanCollection(ir: IntermediateRepresentation): PostmanCollectionSchema {
-    const id = ir.workspaceName ?? "Untitled API";
+    const id = ir.apiName;
     return {
         info: {
             name: id,
@@ -29,17 +37,18 @@ export function convertToPostmanCollection(ir: IntermediateRepresentation): Post
                 value: ORIGIN_DEFAULT_VAULE,
                 type: "string",
             },
+            ...ir.auth.schemes.flatMap(getVariablesForAuthScheme),
         ],
         item: getCollectionItems(ir),
     };
 }
 
 function getCollectionItems(ir: IntermediateRepresentation): PostmanCollectionServiceItem[] {
-    let serviceItems: PostmanCollectionServiceItem[] = [];
+    const serviceItems: PostmanCollectionServiceItem[] = [];
     for (const httpService of ir.services.http) {
-        let endpointItems: PostmanCollectionEndpointItem[] = [];
+        const endpointItems: PostmanCollectionEndpointItem[] = [];
         for (const httpEndpoint of httpService.endpoints) {
-            endpointItems.push(convertEndpoint(httpEndpoint, httpService, ir.types));
+            endpointItems.push(convertEndpoint(ir.auth, httpEndpoint, httpService, ir.types));
         }
         const serviceItem: PostmanCollectionServiceItem = {
             name: httpService.name.name,
@@ -51,13 +60,14 @@ function getCollectionItems(ir: IntermediateRepresentation): PostmanCollectionSe
 }
 
 function convertEndpoint(
+    auth: ApiAuth,
     httpEndpoint: HttpEndpoint,
     httpService: HttpService,
     allTypes: TypeDeclaration[]
 ): PostmanCollectionEndpointItem {
-    const convertedRequest = convertRequest(httpService, httpEndpoint, allTypes);
+    const convertedRequest = convertRequest(auth, httpService, httpEndpoint, allTypes);
     return {
-        name: httpEndpoint.endpointId,
+        name: httpEndpoint.id,
         request: convertedRequest,
         response: [convertResponse(httpEndpoint, allTypes, convertedRequest)],
     };
@@ -68,41 +78,51 @@ function convertResponse(
     allTypes: TypeDeclaration[],
     convertedRequest: PostmanRequest
 ): PostmanExampleResponse {
+    const responseBody = getMockBodyFromTypeReference(httpEndpoint.response.type, allTypes);
     return {
-        name: "Successful " + httpEndpoint.endpointId,
+        name: "Successful " + httpEndpoint.id,
         code: 200,
         originalRequest: convertedRequest,
         description: httpEndpoint.response.docs ?? undefined,
-        body:
-            httpEndpoint.response != null
-                ? JSON.stringify(getMockBodyFromTypeReference(httpEndpoint.response.type, allTypes), undefined, 4)
-                : "",
+        body: responseBody != null ? JSON.stringify(responseBody, undefined, 4) : "",
         _postman_previewlanguage: "json",
     };
 }
 
 function convertRequest(
+    auth: ApiAuth,
     httpService: HttpService,
     httpEndpoint: HttpEndpoint,
     allTypes: TypeDeclaration[]
 ): PostmanRequest {
-    const hostArr = [ORIGIN_VARIABLE];
+    const hostArr = [getReferenceToVariable(ORIGIN_VARIABLE_NAME)];
     const pathArr = getPathArray(httpService.basePath, httpEndpoint.path);
+    const queryParams = getQueryParams(httpEndpoint.queryParameters);
+
+    const { requestAuth, authHeaders } = convertAuth(auth);
+
+    let rawUrl = [...hostArr, ...pathArr].join("/");
+    if (queryParams.length > 0) {
+        rawUrl += "?" + new URLSearchParams(queryParams.map((param) => [param.key, param.value])).toString();
+    }
+
     return {
         description: httpEndpoint.docs ?? undefined,
         url: {
-            raw: hostArr.concat(pathArr).join("/"),
+            raw: rawUrl,
             host: hostArr,
             path: pathArr,
+            query: queryParams,
         },
         header: [
+            ...authHeaders,
             ...httpService.headers.map((header) => convertHeader(header, allTypes)),
             ...httpEndpoint.headers.map((header) => convertHeader(header, allTypes)),
         ],
         method: convertHttpMethod(httpEndpoint.method),
-        auth: convertAuth(httpEndpoint.auth),
+        auth: requestAuth,
         body:
-            httpEndpoint.request == null
+            httpEndpoint.request.type._type === "void"
                 ? undefined
                 : {
                       mode: "raw",
@@ -135,16 +155,25 @@ function getPathArray(basePath: string | undefined | null, endpointPath: HttpPat
     return urlParts;
 }
 
+function getQueryParams(queryParameters: readonly QueryParameter[]): PostmanQueryParameter[] {
+    return queryParameters.map((queryParam) => ({
+        key: queryParam.name.wireValue,
+        value: "",
+        description: queryParam.docs,
+    }));
+}
+
 function splitPathString(path: string) {
     return path.split("/").filter((val) => val.length > 0 && val !== "/");
 }
 
 function convertHeader(header: HttpHeader, allTypes: TypeDeclaration[]): PostmanHeader {
+    const value = getMockBodyFromTypeReference(header.valueType, allTypes);
     return {
-        key: header.header,
+        key: header.name.wireValue,
         description: header.docs ?? undefined,
         type: "text",
-        value: getMockBodyFromTypeReference(header.valueType, allTypes),
+        value: value != null ? JSON.stringify(value) : "",
     };
 }
 
@@ -161,19 +190,105 @@ function convertHttpMethod(httpMethod: HttpMethod): PostmanMethod {
     });
 }
 
-function convertAuth(httpAuth: HttpAuth): PostmanRequestAuth | undefined {
-    return HttpAuth._visit<PostmanRequestAuth | undefined>(httpAuth, {
-        basic: () => {
-            return PostmanRequestAuth.basic();
-        },
-        bearer: () => {
-            return PostmanRequestAuth.bearer();
-        },
-        none: () => {
-            return undefined;
-        },
+interface AuthInfo {
+    requestAuth: PostmanRequestAuth | undefined;
+    authHeaders: PostmanHeader[];
+}
+
+function convertAuth(auth: ApiAuth): AuthInfo {
+    const authInfo: AuthInfo = {
+        requestAuth: undefined,
+        authHeaders: [],
+    };
+
+    for (const scheme of auth.schemes) {
+        AuthScheme._visit(scheme, {
+            basic: () => {
+                if (authInfo.requestAuth == null) {
+                    authInfo.requestAuth = PostmanRequestAuth.basic([
+                        {
+                            key: "username",
+                            value: getReferenceToVariable(BASIC_AUTH_USERNAME_VARIABLE),
+                            type: "string",
+                        },
+                        {
+                            key: "password",
+                            value: getReferenceToVariable(BASIC_AUTH_PASSWORD_VARIABLE),
+                            type: "string",
+                        },
+                    ]);
+                }
+            },
+            bearer: () => {
+                if (authInfo.requestAuth == null) {
+                    authInfo.requestAuth = PostmanRequestAuth.bearer([
+                        {
+                            key: "token",
+                            value: getReferenceToVariable(BEARER_AUTH_TOKEN_VARIABLE),
+                            type: "string",
+                        },
+                    ]);
+                }
+            },
+            header: (header) => {
+                authInfo.authHeaders.push({
+                    key: header.name.wireValue,
+                    value: getReferenceToVariable(getVariableForAuthHeader(header)),
+                    type: "string",
+                    description: header.docs,
+                });
+            },
+            _unknown: () => {
+                throw new Error("Unknown auth scheme: " + scheme._type);
+            },
+        });
+    }
+
+    return authInfo;
+}
+
+const BASIC_AUTH_USERNAME_VARIABLE = "username";
+const BASIC_AUTH_PASSWORD_VARIABLE = "password";
+const BEARER_AUTH_TOKEN_VARIABLE = "token";
+
+function getVariablesForAuthScheme(scheme: AuthScheme): PostmanVariable[] {
+    return AuthScheme._visit(scheme, {
+        basic: () => [
+            {
+                key: BASIC_AUTH_USERNAME_VARIABLE,
+                value: "",
+                type: "string",
+            },
+            {
+                key: BASIC_AUTH_PASSWORD_VARIABLE,
+                value: "",
+                type: "string",
+            },
+        ],
+        bearer: () => [
+            {
+                key: BEARER_AUTH_TOKEN_VARIABLE,
+                value: "",
+                type: "string",
+            },
+        ],
+        header: (header) => [
+            {
+                key: getVariableForAuthHeader(header),
+                value: "",
+                type: "string",
+            },
+        ],
         _unknown: () => {
-            throw new Error("Unexpected httpAuth:" + httpAuth);
+            throw new Error("Unknown auth scheme: " + scheme._type);
         },
     });
+}
+
+function getVariableForAuthHeader(header: HttpHeader): string {
+    return header.name.wireValue;
+}
+
+function getReferenceToVariable(variable: string): string {
+    return `{{${variable}}}`;
 }

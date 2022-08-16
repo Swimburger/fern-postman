@@ -1,8 +1,8 @@
 import { ContainerType, PrimitiveType, Type, TypeDeclaration, TypeReference } from "@fern-fern/ir-model";
-import { isEqual } from "lodash";
+import { isEqual, noop } from "lodash";
 import uuid from "uuid";
 
-export function getMockBodyFromTypeReference(typeReference: TypeReference, allTypes: TypeDeclaration[]): any {
+export function getMockBodyFromTypeReference(typeReference: TypeReference, allTypes: TypeDeclaration[]): unknown {
     return TypeReference._visit(typeReference, {
         primitive: (primitive) =>
             PrimitiveType._visit<any>(primitive, {
@@ -22,8 +22,8 @@ export function getMockBodyFromTypeReference(typeReference: TypeReference, allTy
             ContainerType._visit<any>(container, {
                 list: (value) => [getMockBodyFromTypeReference(value, allTypes)],
                 map: (value) => {
-                    let result = {};
-                    const mockKey = getMockBodyFromTypeReference(value.keyType, allTypes);
+                    const result: Record<string, unknown> = {};
+                    const mockKey = getMockBodyFromTypeReference(value.keyType, allTypes) as string | number;
                     const mockValue = getMockBodyFromTypeReference(value.valueType, allTypes);
                     result[mockKey] = mockValue;
                     return result;
@@ -31,7 +31,7 @@ export function getMockBodyFromTypeReference(typeReference: TypeReference, allTy
                 set: (value) => [getMockBodyFromTypeReference(value, allTypes)],
                 optional: (value) => getMockBodyFromTypeReference(value, allTypes),
                 _unknown: () => {
-                    throw new Error("Encountered unknown wireMessage: " + typeReference);
+                    throw new Error("Encountered unknown wireMessage: " + typeReference._type);
                 },
             }),
         named: (typeName) => {
@@ -54,9 +54,12 @@ export function getMockBodyFromTypeReference(typeReference: TypeReference, allTy
 function getMockBodyFromType(type: Type, allTypes: TypeDeclaration[]): unknown {
     return Type._visit(type, {
         object: (objectDeclaration) => {
-            let object = {};
+            const object = {};
             for (const objectProperty of objectDeclaration.properties) {
-                object[objectProperty.key] = getMockBodyFromTypeReference(objectProperty.valueType, allTypes);
+                object[objectProperty.name.wireValue] = getMockBodyFromTypeReference(
+                    objectProperty.valueType,
+                    allTypes
+                );
             }
             return object;
         },
@@ -80,7 +83,7 @@ function getMockBodyFromType(type: Type, allTypes: TypeDeclaration[]): unknown {
 
             TypeReference._visit(firstUnionType.valueType, {
                 container: (value) => {
-                    union[firstUnionType.discriminantValue] = getMockBodyFromTypeReference(
+                    union[firstUnionType.discriminantValue.wireValue] = getMockBodyFromTypeReference(
                         TypeReference.container(value),
                         allTypes
                     );
@@ -88,17 +91,18 @@ function getMockBodyFromType(type: Type, allTypes: TypeDeclaration[]): unknown {
                 named: (value) => {
                     union = {
                         ...union,
-                        ...getMockBodyFromTypeReference(TypeReference.named(value), allTypes),
+                        // TODO this doesn't support named aliases of primitive types
+                        ...(getMockBodyFromTypeReference(TypeReference.named(value), allTypes) as any),
                     };
                 },
                 primitive: (value) => {
-                    union[firstUnionType.discriminantValue] = getMockBodyFromTypeReference(
+                    union[firstUnionType.discriminantValue.wireValue] = getMockBodyFromTypeReference(
                         TypeReference.primitive(value),
                         allTypes
                     );
                 },
-                void: () => {},
-                unknown: () => {},
+                void: noop,
+                unknown: noop,
                 _unknown: () => {
                     throw new Error("Encountered unknown typeReference: " + firstUnionType.valueType._type);
                 },
