@@ -37,7 +37,13 @@ export async function writePostmanCollection(pathToConfig: string): Promise<void
         );
 
         if (postmanGeneratorConfig?.publishing != null) {
-            await publishCollection({ publishConfig: postmanGeneratorConfig.publishing, collectionDefinition });
+            await publishCollection({
+                publishConfig: postmanGeneratorConfig.publishing,
+                collectionDefinition: {
+                    ...collectionDefinition,
+                    auth: collectionDefinition.auth ?? undefined,
+                },
+            });
         }
 
         await generatorLoggingClient.sendUpdate(GeneratorUpdate.exitStatusUpdate(ExitStatusUpdate.successful()));
