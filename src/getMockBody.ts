@@ -86,7 +86,7 @@ function getMockBodyFromType(type: Type, allTypes: TypeDeclaration[]): unknown {
             }
 
             let union: any = {
-                [unionDeclaration.discriminant]: firstUnionType.discriminantValue,
+                [unionDeclaration.discriminant]: firstUnionType.discriminantValue.wireValue,
             };
 
             TypeReference._visit(firstUnionType.valueType, {
@@ -98,7 +98,7 @@ function getMockBodyFromType(type: Type, allTypes: TypeDeclaration[]): unknown {
                 },
                 named: (value) => {
                     union = {
-                        ...union,
+                        _type: firstUnionType.discriminantValue.wireValue,
                         // TODO this doesn't support named aliases of primitive types
                         ...(getMockBodyFromTypeReference({
                             typeReference: TypeReference.named(value),
