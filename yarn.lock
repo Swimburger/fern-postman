@@ -1360,82 +1360,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fern-api/core-utils@npm:0.0.188-13-g68e2f408":
-  version: 0.0.188-13-g68e2f408
-  resolution: "@fern-api/core-utils@npm:0.0.188-13-g68e2f408"
-  dependencies:
-    strip-ansi: ^7.0.1
-  checksum: 4b60ee975b439630cc6768aa5b0a519a2bc861e73787d4f3c382499605fbd66ce153d43d259eea78bcaf511c8a762b4af3bd9bef78f8927c36607b31e95130e3
-  languageName: node
-  linkType: hard
-
-"@fern-api/generators-configuration@npm:0.0.188-13-g68e2f408":
-  version: 0.0.188-13-g68e2f408
-  resolution: "@fern-api/generators-configuration@npm:0.0.188-13-g68e2f408"
-  dependencies:
-    "@fern-api/config-management-commons": 0.0.188-13-g68e2f408
-    "@fern-api/core-utils": 0.0.188-13-g68e2f408
-    "@fern-api/project-configuration": 0.0.188-13-g68e2f408
-    js-yaml: ^4.1.0
-    lodash-es: ^4.17.21
-    zod: ^3.14.3
-  checksum: 60e985892af4d99a755be298ed65604175b9dc12edfe7d48601dd3a83c468c0ebf064c63a11900d9584bd67e9770ae813e12bf7507c9e6d5b11da5af93a7193b
-  languageName: node
-  linkType: hard
-
-"@fern-api/ir-generator@npm:0.0.188-13-g68e2f408":
-  version: 0.0.188-13-g68e2f408
-  resolution: "@fern-api/ir-generator@npm:0.0.188-13-g68e2f408"
-  dependencies:
-    "@fern-api/core-utils": 0.0.188-13-g68e2f408
-    "@fern-api/workspace-loader": 0.0.188-13-g68e2f408
-    "@fern-api/yaml-schema": 0.0.188-13-g68e2f408
-    "@fern-fern/ir-model": 0.0.184
-    lodash-es: ^4.17.21
-  checksum: b4c41510bb17d0066346c8eb536f06d46b8b2272ac33bd32231cb7f2f55c3026daa7788159361cc1c1f89c7209160517cf870137245ce786e76450de9a2de492
-  languageName: node
-  linkType: hard
-
-"@fern-api/project-configuration@npm:0.0.188-13-g68e2f408":
-  version: 0.0.188-13-g68e2f408
-  resolution: "@fern-api/project-configuration@npm:0.0.188-13-g68e2f408"
-  dependencies:
-    "@fern-api/config-management-commons": 0.0.188-13-g68e2f408
-    "@fern-api/core-utils": 0.0.188-13-g68e2f408
-    find-up: ^6.3.0
-    zod: ^3.14.3
-  checksum: df98b3656ff9ab9932f75a5a0091d5cb92396d74e8c45d635704903dcfcd07b69c5502bf7e0fa2ee8afa72a197b9986003355f117cc773d366aea416c415b5aa
-  languageName: node
-  linkType: hard
-
-"@fern-api/workspace-loader@npm:0.0.188-13-g68e2f408":
-  version: 0.0.188-13-g68e2f408
-  resolution: "@fern-api/workspace-loader@npm:0.0.188-13-g68e2f408"
-  dependencies:
-    "@fern-api/config-management-commons": 0.0.188-13-g68e2f408
-    "@fern-api/core-utils": 0.0.188-13-g68e2f408
-    "@fern-api/generators-configuration": 0.0.188-13-g68e2f408
-    "@fern-api/project-configuration": 0.0.188-13-g68e2f408
-    "@fern-api/yaml-schema": 0.0.188-13-g68e2f408
-    glob: ^7.2.0
-    glob-promise: ^4.2.2
-    js-yaml: ^4.1.0
-    zod: ^3.14.3
-  checksum: 42bea7b69370b96c90bce556ebef318dbf70f8d570612996af392b821d8b5dd416b22c623f6488c8e42effb645332547f96a0bfa88212e83d2717435889e6f90
-  languageName: node
-  linkType: hard
-
-"@fern-api/yaml-schema@npm:0.0.188-13-g68e2f408":
-  version: 0.0.188-13-g68e2f408
-  resolution: "@fern-api/yaml-schema@npm:0.0.188-13-g68e2f408"
-  dependencies:
-    "@fern-api/core-utils": 0.0.188-13-g68e2f408
-    "@fern-fern/ir-model": 0.0.184
-    zod: ^3.14.3
-  checksum: d533a54ab3df23ea17a34a7748b765c3b25d61394fcf5dc6b0bb40a8b65637abc0972b68109190dcce53b3606a02bf5fa3e7a0b5eb6f6af988ae967149e575d2
-  languageName: node
-  linkType: hard
-
 "@fern-fern/generator-exec-client@npm:^0.0.37":
   version: 0.0.37
   resolution: "@fern-fern/generator-exec-client@npm:0.0.37"
@@ -1449,7 +1373,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fern-fern/ir-model@npm:0.0.184, @fern-fern/ir-model@npm:^0.0.184":
+"@fern-fern/ir-model@npm:^0.0.184":
   version: 0.0.184
   resolution: "@fern-fern/ir-model@npm:0.0.184"
   checksum: e117e345080c137d0dc06be40325dbf65011621ed0d4f3c9b27b9e293222f489bc49b40f25e2bfad2f39e4e97c5332139576c8962f8286d03bb68fe853db67fc
@@ -1970,16 +1894,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/glob@npm:^7.1.3":
-  version: 7.2.0
-  resolution: "@types/glob@npm:7.2.0"
-  dependencies:
-    "@types/minimatch": "*"
-    "@types/node": "*"
-  checksum: 6ae717fedfdfdad25f3d5a568323926c64f52ef35897bcac8aca8e19bc50c0bd84630bbd063e5d52078b2137d8e7d3c26eabebd1a2f03ff350fff8a91e79fc19
-  languageName: node
-  linkType: hard
-
 "@types/graceful-fs@npm:^4.1.3":
   version: 4.1.5
   resolution: "@types/graceful-fs@npm:4.1.5"
@@ -2038,7 +1952,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/minimatch@npm:*, @types/minimatch@npm:^3.0.3":
+"@types/minimatch@npm:^3.0.3":
   version: 3.0.5
   resolution: "@types/minimatch@npm:3.0.5"
   checksum: c41d136f67231c3131cf1d4ca0b06687f4a322918a3a5adddc87ce90ed9dbd175a3610adee36b106ae68c0b92c637c35e02b58c8a56c424f71d30993ea220b92
@@ -3889,9 +3803,6 @@ __metadata:
     "@babel/preset-env": ^7.18.2
     "@babel/preset-typescript": ^7.17.12
     "@fern-api/config-management-commons": 0.0.188-13-g68e2f408
-    "@fern-api/core-utils": 0.0.188-13-g68e2f408
-    "@fern-api/ir-generator": 0.0.188-13-g68e2f408
-    "@fern-api/workspace-loader": 0.0.188-13-g68e2f408
     "@fern-fern/generator-exec-client": ^0.0.37
     "@fern-fern/ir-model": ^0.0.184
     "@fern-fern/postman-collection-api-client": 0.0.16
@@ -3965,16 +3876,6 @@ __metadata:
     locate-path: ^5.0.0
     path-exists: ^4.0.0
   checksum: 4c172680e8f8c1f78839486e14a43ef82e9decd0e74145f40707cc42e7420506d5ec92d9a11c22bd2c48fb0c384ea05dd30e10dd152fefeec6f2f75282a8b844
-  languageName: node
-  linkType: hard
-
-"find-up@npm:^6.3.0":
-  version: 6.3.0
-  resolution: "find-up@npm:6.3.0"
-  dependencies:
-    locate-path: ^7.1.0
-    path-exists: ^5.0.0
-  checksum: 9a21b7f9244a420e54c6df95b4f6fc3941efd3c3e5476f8274eb452f6a85706e7a6a90de71353ee4f091fcb4593271a6f92810a324ec542650398f928783c280
   languageName: node
   linkType: hard
 
@@ -4138,17 +4039,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob-promise@npm:^4.2.2":
-  version: 4.2.2
-  resolution: "glob-promise@npm:4.2.2"
-  dependencies:
-    "@types/glob": ^7.1.3
-  peerDependencies:
-    glob: ^7.1.6
-  checksum: c1a3d95f7c8393e4151d4899ec4e42bb2e8237160f840ad1eccbe9247407da8b6c13e28f463022e011708bc40862db87b9b77236d35afa3feb8aa86d518f2dfe
-  languageName: node
-  linkType: hard
-
 "glob-to-regexp@npm:^0.4.1":
   version: 0.4.1
   resolution: "glob-to-regexp@npm:0.4.1"
@@ -4156,7 +4046,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.2.0":
+"glob@npm:^7.1.3, glob@npm:^7.1.4":
   version: 7.2.3
   resolution: "glob@npm:7.2.3"
   dependencies:
@@ -5290,22 +5180,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"locate-path@npm:^7.1.0":
-  version: 7.1.1
-  resolution: "locate-path@npm:7.1.1"
-  dependencies:
-    p-locate: ^6.0.0
-  checksum: 1d88af5b512d6e6398026252e17382907126683ab09ae5d6b8918d0bc72ca2642e1ad6e2fe635c5920840e369618e5d748c08deb57ba537fdd3f78e87ca993e0
-  languageName: node
-  linkType: hard
-
-"lodash-es@npm:^4.17.21":
-  version: 4.17.21
-  resolution: "lodash-es@npm:4.17.21"
-  checksum: 05cbffad6e2adbb331a4e16fbd826e7faee403a1a04873b82b42c0f22090f280839f85b95393f487c1303c8a3d2a010048bf06151a6cbe03eee4d388fb0a12d2
-  languageName: node
-  linkType: hard
-
 "lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
@@ -5808,30 +5682,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-limit@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "p-limit@npm:4.0.0"
-  dependencies:
-    yocto-queue: ^1.0.0
-  checksum: 01d9d70695187788f984226e16c903475ec6a947ee7b21948d6f597bed788e3112cc7ec2e171c1d37125057a5f45f3da21d8653e04a3a793589e12e9e80e756b
-  languageName: node
-  linkType: hard
-
 "p-locate@npm:^4.1.0":
   version: 4.1.0
   resolution: "p-locate@npm:4.1.0"
   dependencies:
     p-limit: ^2.2.0
   checksum: 513bd14a455f5da4ebfcb819ef706c54adb09097703de6aeaa5d26fe5ea16df92b48d1ac45e01e3944ce1e6aa2a66f7f8894742b8c9d6e276e16cd2049a2b870
-  languageName: node
-  linkType: hard
-
-"p-locate@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "p-locate@npm:6.0.0"
-  dependencies:
-    p-limit: ^4.0.0
-  checksum: 2bfe5234efa5e7a4e74b30a5479a193fdd9236f8f6b4d2f3f69e3d286d9a7d7ab0c118a2a50142efcf4e41625def635bd9332d6cbf9cc65d85eb0718c579ab38
   languageName: node
   linkType: hard
 
@@ -5876,13 +5732,6 @@ __metadata:
   version: 4.0.0
   resolution: "path-exists@npm:4.0.0"
   checksum: 505807199dfb7c50737b057dd8d351b82c033029ab94cb10a657609e00c1bc53b951cfdbccab8de04c5584d5eff31128ce6afd3db79281874a5ef2adbba55ed1
-  languageName: node
-  linkType: hard
-
-"path-exists@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "path-exists@npm:5.0.0"
-  checksum: 8ca842868cab09423994596eb2c5ec2a971c17d1a3cb36dbf060592c730c725cd524b9067d7d2a1e031fef9ba7bd2ac6dc5ec9fb92aa693265f7be3987045254
   languageName: node
   linkType: hard
 
@@ -7370,13 +7219,6 @@ __metadata:
   version: 0.1.0
   resolution: "yocto-queue@npm:0.1.0"
   checksum: f77b3d8d00310def622123df93d4ee654fc6a0096182af8bd60679ddcdfb3474c56c6c7190817c84a2785648cdee9d721c0154eb45698c62176c322fb46fc700
-  languageName: node
-  linkType: hard
-
-"yocto-queue@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "yocto-queue@npm:1.0.0"
-  checksum: 2cac84540f65c64ccc1683c267edce396b26b1e931aa429660aefac8fbe0188167b7aee815a3c22fa59a28a58d898d1a2b1825048f834d8d629f4c2a5d443801
   languageName: node
   linkType: hard
 
