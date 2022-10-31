@@ -7,8 +7,9 @@ DOCKER_NAME=fern-postman:"$TAG"
 
 PACKAGE_DIR="$(pwd)"
 DOCKER_DIR="$PACKAGE_DIR/docker"
+ROOT_DIR="$DOCKER_DIR/.."
 WEBPACK_CONFIG="$DOCKER_DIR/webpack.config.cjs"
-WEBPACK_TS_CONFIG="$DOCKER_DIR/tsconfig.webpack.json"
+WEBPACK_TS_CONFIG="tsconfig.webpack.json"
 
 webpack_mode="production"
 if [[ "$TAG" == "local" ]]; then
@@ -17,7 +18,7 @@ fi
 
 yarn
 yarn node $(yarn bin webpack) --config "$WEBPACK_CONFIG" --mode "$webpack_mode"
-docker build -f "$DOCKER_DIR/Dockerfile" -t "$DOCKER_NAME" "$DOCKER_DIR"
+docker build -f "$DOCKER_DIR/Dockerfile" -t "$DOCKER_NAME" "$ROOT_DIR"
 
 echo
 echo "Built docker: $DOCKER_NAME"
