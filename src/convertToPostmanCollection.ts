@@ -129,7 +129,7 @@ function convertEndpoint({
             : new GeneratedDummyRequest({ authHeaders, httpService, httpEndpoint, allTypes });
 
     return {
-        name: httpEndpoint.id,
+        name: httpEndpoint.displayName ?? httpEndpoint.id,
         request: generatedRequest.get(),
         response: httpEndpoint.examples.map((example) =>
             convertExampleEndpointCall({ authHeaders, httpService, httpEndpoint, allTypes, allErrors, example })
