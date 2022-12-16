@@ -34,7 +34,7 @@ types:
   PostmanCollectionContainerItem:
     properties:
       name: string
-      item: list<PostmanCollectionEndpointItem>
+      item: list<PostmanCollectionItem>
 
   PostmanCollectionEndpointItem:
     properties:
