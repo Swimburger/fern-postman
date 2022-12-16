@@ -9,7 +9,7 @@ import {
     PostmanCollectionServiceItem,
     PostmanHeader,
 } from "@fern-fern/postman-sdk/resources";
-import { convertAuth, getAuthHeaders, getVariablesForAuthScheme } from "./convertAuth";
+import { convertAuth, getAuthHeaders, getVariablesForAuthScheme } from "./auth";
 import { convertExampleEndpointCall } from "./convertExampleEndpointCall";
 import { GeneratedDummyRequest } from "./request/GeneratedDummyRequest";
 import { GeneratedExampleRequest } from "./request/GeneratedExampleRequest";
