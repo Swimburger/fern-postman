@@ -1,4 +1,6 @@
-draft:
-  - name: fernapi/fern-typescript-sdk
-    version: 0.0.227
-    mode: publish
+default-group: server
+groups:
+  server:
+    generators:
+      - name: fernapi/fern-typescript-sdk
+        version: 0.0.258
