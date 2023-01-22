@@ -1,6 +1,6 @@
-default-group: server
+default-group: sdks
 groups:
-  server:
+  sdks:
     generators:
       - name: fernapi/fern-typescript-sdk
         version: 0.0.258
