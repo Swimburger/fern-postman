@@ -51,7 +51,6 @@ export function convertAuth(schemes: AuthScheme[]): PostmanRequestAuth | undefin
                 ]);
             },
             _unknown: () => {
-                console.log("IN UNKNOWN");
                 throw new Error("Unknown auth scheme: " + scheme._type);
             },
         });
