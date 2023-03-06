@@ -101,10 +101,6 @@ function getCollectionItemsForPackage(
 ): PostmanCollectionItem[] {
     const items: PostmanCollectionItem[] = [];
 
-    if (!package_.hasEndpointsInTree) {
-        return [];
-    }
-
     for (const subpackageId of package_.subpackages) {
         const subpackage = ir.subpackages[subpackageId];
         if (subpackage == null) {
