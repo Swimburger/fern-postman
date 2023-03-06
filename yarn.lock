@@ -1371,10 +1371,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fern-fern/ir-model@npm:0.0.1150":
-  version: 0.0.1150
-  resolution: "@fern-fern/ir-model@npm:0.0.1150"
-  checksum: e54d997012de12124ec18fd68fdb05c6021b90f6e98efa2e64f6f5972723b48f826b14f6285e15510e28a2844107e752e9fc189875e3d4bb3251fc28d3941e29
+"@fern-fern/ir-model@npm:0.0.1165":
+  version: 0.0.1165
+  resolution: "@fern-fern/ir-model@npm:0.0.1165"
+  checksum: 876d0d36af375cc99bc077bd3531a25fd50d307eddeeeba1e2bb61a5ed9dd67ebfc6fdbbdcf4c8bb207c6c074feb8b916823184c942a0672e73b51c4717fbeab
   languageName: node
   linkType: hard
 
@@ -3775,7 +3775,7 @@ __metadata:
     "@babel/preset-typescript": ^7.17.12
     "@fern-api/config-management-commons": 0.0.188-13-g68e2f408
     "@fern-fern/generator-exec-sdk": ^0.0.42
-    "@fern-fern/ir-model": 0.0.1150
+    "@fern-fern/ir-model": 0.0.1165
     "@fern-fern/postman-sdk": 0.0.17
     "@types/jest": ^27.5.0
     "@types/lodash": ^4.14.182

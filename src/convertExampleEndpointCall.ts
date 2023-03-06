@@ -1,5 +1,5 @@
 import { ErrorDeclaration } from "@fern-fern/ir-model/errors";
-import { ExampleEndpointCall, HttpEndpoint, HttpService } from "@fern-fern/ir-model/services/http";
+import { ExampleEndpointCall, HttpEndpoint, HttpService } from "@fern-fern/ir-model/http";
 import { TypeDeclaration } from "@fern-fern/ir-model/types";
 import { PostmanExampleResponse, PostmanHeader } from "@fern-fern/postman-sdk/resources";
 import { isEqual, startCase } from "lodash";
@@ -57,10 +57,10 @@ function getNameAndStatus({
         const errorName = example.response.error;
         const errorDeclaration = allErrors.find((error) => isEqual(error.name, errorName));
         if (errorDeclaration == null) {
-            throw new Error("Cannot find error: " + errorName.nameV3.unsafeName.originalValue);
+            throw new Error("Cannot find error: " + errorName.name.originalName);
         }
 
-        const errorDisplayName = startCase(errorName.nameV3.unsafeName.originalValue);
+        const errorDisplayName = startCase(errorName.name.originalName);
         return {
             name: errorDisplayName,
             status: errorDisplayName,
