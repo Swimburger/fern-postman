@@ -8,7 +8,7 @@ import {
     PostmanCollectionItem,
     PostmanCollectionSchema,
     PostmanHeader,
-} from "@fern-fern/postman-sdk/resources";
+} from "@fern-fern/postman-sdk/types/api";
 import { startCase } from "lodash";
 import { convertAuth, getAuthHeaders, getVariablesForAuthScheme } from "./auth";
 import { convertExampleEndpointCall } from "./convertExampleEndpointCall";
@@ -108,6 +108,7 @@ function getCollectionItemsForPackage(
         }
         items.push(
             PostmanCollectionItem.container({
+                description: subpackage.docs ?? undefined,
                 name: startCase(subpackage.name.originalName),
                 item: getCollectionItemsForPackage(subpackage, ir, authHeaders),
             })

@@ -33,6 +33,7 @@ types:
 
   PostmanCollectionContainerItem:
     properties:
+      description: optional<string>
       name: string
       item: list<PostmanCollectionItem>
 
