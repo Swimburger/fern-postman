@@ -1,8 +1,8 @@
-import { ApiAuth, AuthScheme } from "@fern-fern/ir-v4-model/auth";
-import { ErrorDeclaration } from "@fern-fern/ir-v4-model/errors";
-import { IntermediateRepresentation } from "@fern-fern/ir-v4-model/ir";
-import { HttpEndpoint, HttpService } from "@fern-fern/ir-v4-model/services/http";
-import { TypeDeclaration } from "@fern-fern/ir-v4-model/types";
+import { ApiAuth, AuthScheme } from "@fern-fern/ir-model/auth";
+import { ErrorDeclaration } from "@fern-fern/ir-model/errors";
+import { IntermediateRepresentation } from "@fern-fern/ir-model/ir";
+import { HttpEndpoint, HttpService } from "@fern-fern/ir-model/services/http";
+import { TypeDeclaration } from "@fern-fern/ir-model/types";
 import {
     PostmanCollectionEndpointItem,
     PostmanCollectionItem,
