@@ -1,5 +1,9 @@
 name: postman
 auth: api-key
+docs: |
+  These are my docs.
+  ## Welcome to my title
+  More docs with [links](http://localhost.com)
 auth-schemes:
   api-key:
     header: X-API-KEY
