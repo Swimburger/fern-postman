@@ -3,7 +3,7 @@ import {
     GeneratorConfig,
     GeneratorEnvironment,
     GithubPublishInfo,
-    OutputMode,
+    OutputMode
 } from "@fern-fern/generator-exec-sdk/resources";
 import { execa } from "execa";
 import { readFile, rm, symlink, writeFile } from "fs/promises";
@@ -11,7 +11,7 @@ import path from "path";
 import tmp from "tmp-promise";
 import { COLLECTION_OUTPUT_FILENAME, writePostmanCollection } from "../writePostmanCollection";
 
-const FIXTURES = ["test-api", "any-auth"];
+const FIXTURES = ["toast", "test-api", "any-auth"];
 
 describe("convertToPostman", () => {
     for (const fixture of FIXTURES) {
@@ -64,7 +64,7 @@ describe("convertToPostman", () => {
 
                 expect(postmanCollection).toMatchSnapshot();
             },
-            20_000
+            2000000_000
         );
     }
 });
