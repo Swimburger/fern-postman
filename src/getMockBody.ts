@@ -22,11 +22,12 @@ export function getMockBodyFromTypeReference({
     allTypes: TypeDeclaration[];
     visitedTypes?: Set<string>
 }): unknown {
-    const stringifiedTypeReference = JSON.stringify(typeReference);
-    if (visitedTypes.has(stringifiedTypeReference)) {
-        return undefined;
-      }
-    visitedTypes.add(stringifiedTypeReference);
+    if (typeReference._type === "named") {
+        if (visitedTypes.has(typeReference.typeId)) {
+            return undefined;
+        }
+        visitedTypes.add(typeReference.typeId);
+    }
     return TypeReference._visit(typeReference, {
         primitive: (primitive) =>
             PrimitiveType._visit<any>(primitive, {
