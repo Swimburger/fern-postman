@@ -1,0 +1,214 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /discounts
+  endpoints:
+    get:
+      path: /{guid}
+      method: GET
+      docs: |
+        Returns a `Discount`
+        object containing information about a price deduction
+        configured for a restaurant.
+      display-name: |
+        Get a discount
+      path-parameters:
+        guid:
+          docs: The Toast POS GUID of the discount.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          discount
+          -request
+      response: Discount
+    getAll:
+      path: ""
+      method: GET
+      docs: |
+        Returns an array of `Discount` objects containing
+        information about the price deductions configured for a
+        restaurant. If a `lastModified` date is specified, returns all
+        objects that were created or modified after that date.
+      display-name: |
+        Get discounts
+      request:
+        query-parameters:
+          pageToken:
+            docs: >
+              A string that identifies the set of data objects that the  endpoint will
+              return in its response data. You can use this  parameter to
+              retrieve one page of response data. You  get the value that you
+              supply in the `pageToken` parameter  from the
+              `Toast-Next-Page-Token` header field value of a  previous request
+              to the endpoint. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<string>
+          pageSize:
+            docs: >
+              The number of objects to return in the array. Deprecated. For more
+              information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          page:
+            docs: >
+              The sequence number of the first object to return in the array.
+              Deprecated. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          lastModified:
+            docs: |
+              Limits the return data to objects created or modified after
+              a specific date and time. For example:
+              `2015-12-01T00:00:00.000+0000`.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          discounts
+          -request
+      response: list<Discount>
+types:
+  Discount:
+    extends:
+      - commons.ToastReference
+    docs: |
+      A discount configured in the Toast administration back-end.
+      Discounts are always applied before taxes, but after
+      service charges are calculated.
+    properties:
+      name:
+        docs: The human-readable name of the discount.
+        type: optional<string>
+      active:
+        docs: |
+          Indicates whether the discount is available and can be
+          applied by restaurant employees.
+        type: optional<boolean>
+      type:
+        docs: |
+          * `PERCENT` - the discount reduces the price by a
+          preconfigured percent.
+          * `FIXED` - the discount reduces the price by a
+          preconfigured currency amount.
+          * `OPEN_PERCENT` - the discount reduces the price by a
+          percent entered by a restaurant employee.
+          * `OPEN_FIXED` - the discount reduces the price by a
+          currency amount entered by a restaurant employee.
+          * `BOGO` - a buy one get one (BOGO) discount.
+          * `FIXED_TOTAL` - a combo discount that reduces the
+          price of all eligible items to a preconfigured currency
+          amount.
+        type: optional<DiscountType>
+      percentage:
+        docs: |
+          Percent discount applied when the `amountType` is
+          `PERCENT`. This value will be greater than 0 and at
+          most 100.
+        type: optional<double>
+      amount:
+        docs: |
+          The currency amount of the discount when the
+          `amountType` is `FIXED`. This value will be greater
+          than 0.
+        type: optional<double>
+      selectionType:
+        docs: |
+          * `CHECK` - the discount can be applied to a check.
+          * `BOGO` - a buy one get one (BOGO) discount.
+          * `ITEM` - the discount can be applied to an item
+          selection in a check.
+        type: optional<DiscountSelection>
+      nonExclusive:
+        docs: |
+          Indicates whether you can apply the discount with other
+          discounts. This value is always `false` for item and
+          combo discounts. Set this value for check and BOGO
+          discounts by selecting **Allow with other discounts** in
+          the **Discounts Rules** section of the discounts
+          configuration page of the Toast administration
+          back-end.
+        type: optional<boolean>
+      itemPickingPriority:
+        docs: |
+          Indicates which menu item selections are discounted
+          when you apply a BOGO discount. An item that is
+          discounted by a BOGO discount is a "get" item.
+          * `FIRST` - the BOGO discount applies to the first
+          matching item selection in the check or the discount is
+          not a BOGO discount. The `itemPickingPriority` is
+          always `FIRST` for discounts that are not BOGO
+          discounts.
+          * `LEAST_EXPENSIVE` - the BOGO discount applies
+          to the least expensive matching item selection in the check.
+          * `MOST_EXPENSIVE` - the BOGO discount applies to the most
+          expensive matching item selection in the check.
+        type: optional<MenuSelection>
+      fixedTotal:
+        docs: |
+          The total price of items discounted by a combo
+          discount. This value is `null` for discounts that are
+          not combo discounts.
+        type: optional<double>
+  DiscountType:
+    docs: |
+      * `PERCENT` - the discount reduces the price by a
+      preconfigured percent.
+      * `FIXED` - the discount reduces the price by a
+      preconfigured currency amount.
+      * `OPEN_PERCENT` - the discount reduces the price by a
+      percent entered by a restaurant employee.
+      * `OPEN_FIXED` - the discount reduces the price by a
+      currency amount entered by a restaurant employee.
+      * `BOGO` - a buy one get one (BOGO) discount.
+      * `FIXED_TOTAL` - a combo discount that reduces the
+      price of all eligible items to a preconfigured currency
+      amount.
+    enum:
+      - PERCENT
+      - FIXED
+      - OPEN_PERCENT
+      - OPEN_FIXED
+      - BOGO
+      - FIXED_TOTAL
+  DiscountSelection:
+    docs: |
+      * `CHECK` - the discount can be applied to a check.
+      * `BOGO` - a buy one get one (BOGO) discount.
+      * `ITEM` - the discount can be applied to an item
+      selection in a check.
+    enum:
+      - CHECK
+      - ITEM
+      - BOGO
+  MenuSelection:
+    docs: |
+      Indicates which menu item selections are discounted
+      when you apply a BOGO discount. An item that is
+      discounted by a BOGO discount is a "get" item.
+      * `FIRST` - the BOGO discount applies to the first
+      matching item selection in the check or the discount is
+      not a BOGO discount. The `itemPickingPriority` is
+      always `FIRST` for discounts that are not BOGO
+      discounts.
+      * `LEAST_EXPENSIVE` - the BOGO discount applies
+      to the least expensive matching item selection in the check.
+      * `MOST_EXPENSIVE` - the BOGO discount applies to the most
+      expensive matching item selection in the check.
+    enum:
+      - FIRST
+      - LEAST_EXPENSIVE
+      - MOST_EXPENSIVE

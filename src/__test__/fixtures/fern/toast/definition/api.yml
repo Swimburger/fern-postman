@@ -1,0 +1,7 @@
+name: toast
+display-name: Toast API
+auth: bearer
+environments:
+  Production: https://ws-api.toasttab.com/menus/v2
+  Sandbox: https://ws-sandbox-api.eng.toasttab.com/menus/v2
+default-environment: Production

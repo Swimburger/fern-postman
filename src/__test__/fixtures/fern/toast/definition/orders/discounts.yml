@@ -1,0 +1,121 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: ""
+  endpoints:
+    createCheckLevelDiscount:
+      path: /orders/{orderGuid}/checks/{checkGuid}/appliedDiscounts
+      method: POST
+      docs: >
+        Adds one or more check-level discounts to a check in an existing order.
+        Include an array of `Discount` objects in the message body. For more
+        information, see  <a
+        href="https://doc.toasttab.com/doc/devguide/apiDiscountingOrders.html#apiAddingDiscountsToChecks">
+        the _Toast Developer Guide_</a>.
+      display-name: Add check-level discounts
+      path-parameters:
+        orderGuid:
+          docs: |
+            The Toast platform identifier of the order that you are
+            adding a discount to.
+          type: string
+        checkGuid:
+          docs: |
+            The Toast platform identifier of the check that you are
+            adding a discount to.
+          type: string
+      request:
+        body:
+          type: string
+        name: add-check-level-discounts-request
+      response: commons.Order
+    createItemLevelDiscount:
+      path: /orders/{orderGuid}/checks/{checkGuid}/selections/{selectionGuid}/appliedDiscounts
+      method: POST
+      docs: >
+        Adds one or more item-level discounts to menu item selections in a check
+        in an existing order. Include an array of `Discount` objects in the
+        message body. For more information, see <a
+        href="https://doc.toasttab.com/doc/devguide/apiDiscountingOrders.html#apiAddingDiscountsToChecks">
+        the _Toast Developer Guide_</a>.
+      display-name: Add item-level discounts
+      path-parameters:
+        orderGuid:
+          docs: |
+            The Toast platform identifier of the order that you are
+            adding a discount to.
+          type: string
+        checkGuid:
+          docs: |
+            The Toast platform identifier of the check that you are
+            adding a discount to.
+          type: string
+        selectionGuid:
+          docs: |
+            The Toast platform identifier of the menu item selection
+            that you are adding a discount to.
+          type: string
+      request:
+        body:
+          type: string
+        name: add-item-level-discounts-request
+      response: commons.Order
+    get:
+      path: /applicableDiscounts
+      method: POST
+      docs: |
+        Returns an array of `ApplicableDiscount`
+        objects that contain information about the discounts that apply
+        to the checks and menu item selections in an order.
+        Each `ApplicableDiscount` object contains information that you can
+        use to determine which items and checks are eligible for the
+        discount.
+        If you include a `promoCode` value in the
+        `ApplicableDiscount` object, the `applicableDiscounts` endpoint
+        returns the only the discounts that are associated with that
+        promotional code.
+      display-name: Get applicable discounts
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: The identifier of the restaurant.
+            type: string
+        body: ApplicableDiscountsRequest
+        name: get-applicable-discounts-request
+      response: list<ApplicableDiscount>
+types:
+  ApplicableDiscountsRequest:
+    docs: |
+      A wrapper object that contains an `Order` object and an optional
+      promotional code.
+      You include an `ApplicableDiscountsRequest`
+      object in the message body of a `POST` request to the
+      `applicableDiscounts` endpoint.
+    properties:
+      order: commons.Order
+      promoCode:
+        docs: |
+          An optional promotional code. If you include a promotional
+          code, the `applicableDiscounts` endpoint returns only
+          discounts that are associated with that promotional code.
+        type: optional<string>
+  ApplicableDiscount:
+    docs: |
+      A wrapper object that contains information about a discount that you
+      can apply to an order, and which checks or menu item selections
+      you can apply it to.
+    properties:
+      discount: commons.ToastReference
+      applicableChecks:
+        docs: >
+          If the discount is applicable to a check, this value holds an array of
+          `ExternalReference` objects containing the identifiers of the checks.
+        type: optional<list<commons.ExternalReference>>
+      applicableSelections:
+        docs: |
+          If the discount is applicable to a menu item selection, this
+          value holds an array of `ExternalReference` objects containing
+          the identifiers of the menu items.
+        type: optional<list<commons.ExternalReference>>
+

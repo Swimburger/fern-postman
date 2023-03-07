@@ -1,0 +1,128 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: ""
+  endpoints:
+    getAll:
+      path: /payments
+      method: GET
+      docs: |
+        Returns a list of the GUIDs for each payment made during
+        one restaurant business day.
+        The specific hours that make up a business
+        day depend on the business day cutoff in the restaurant configuration,
+        which is available from the restaurants API in the `closeoutHour`
+        property.
+        The business day for a restaurant is based on its local time (not UTC
+        or local time for an API client).
+        You must include one of the
+        `paidBusinessDate`, `refundBusinessDate`, or `voidBusinessDate` query
+        parameters.
+      display-name: Get payment identifiers
+      request:
+        query-parameters:
+          paidBusinessDate:
+            docs: |
+              Returns a list of the payments that were made during
+              one business day.
+              Specify the business day in the format yyyyMMdd.
+              For example, `20170101`.
+            type: optional<string>
+          refundBusinessDate:
+            docs: |
+              Returns a list of the payments that were refunded
+              during one business day.
+              Specify the business day in the format
+              yyyyMMdd. For example, `20170101`.
+            type: optional<string>
+          voidBusinessDate:
+            docs: |
+              Returns a list of the payments that were voided during
+              one business day.
+              Specify the business day in the format yyyyMMdd.
+              For example, `20170101`.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: The GUID of the restaurant used as the context of the request.
+            type: string
+        name: get-payment-identifiers-request
+      response: list<string>
+    get:
+      path: /payments/{guid}
+      method: GET
+      docs: Returns a JSON `Payment` object containing detailed information about
+        a  single payment, specified by its GUID.
+      display-name: Get a payment
+      path-parameters:
+        guid:
+          docs: The GUID for the payment you want to return.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: The GUID of the restaurant used as the context of the request.
+            type: string
+        name: get-a-payment-request
+      response: commons.Payment
+    create:
+      path: /orders/{orderGuid}/checks/{checkGuid}/payments
+      method: POST
+      docs: >
+        Adds one or more payments to a check in an existing order. Include
+        information about the payments in an array of `Payment` objects in the
+        message body. Specify the Toast platform GUID of the order and check in
+        REST path parameters. For more information, see <a
+        href="https://doc.toasttab.com/doc/devguide/apiAddingPaymentsToACheck.html">
+        the _Toast Developer Guide_</a>.
+      display-name: Post payments
+      path-parameters:
+        orderGuid:
+          docs: |
+            The Toast platform identifier of the order that you are
+            adding payments to.
+          type: string
+        checkGuid:
+          docs: |
+            The Toast platform identifier of the check that you are
+            adding payments to.
+          type: string
+      request:
+        body:
+          type: list<commons.Payment>
+        name: post-payments-request
+      response: commons.Order
+    update:
+      path: /orders/{orderGuid}/checks/{checkGuid}/payments/{paymentGuid}
+      method: PATCH
+      docs: >
+        Updates the tip amount in an existing payment for a check in an order.
+        Include the new `tipAmount` value in a `Payment` object in the message
+        body. This endpoint does not allow any other `Payment` object value for
+        a `PATCH` request. Specify the Toast platform GUID of the order, check,
+        and payment in REST path parameters. For more information, see <a
+        href="https://doc.toasttab.com/doc/devguide/apiUpdatingTipsInAPayment.html">
+        the _Toast Developer Guide_</a>.
+      display-name: Update a tip amount
+      path-parameters:
+        orderGuid:
+          docs: |
+            The Toast platform identifier of the order that you are
+            updating a tip in.
+          type: string
+        checkGuid:
+          docs: |
+            The Toast platform identifier of the check that you are
+            updating a tip in.
+          type: string
+        paymentGuid:
+          docs: |
+            The Toast platform identifier of the payment that you are
+            updating a tip in.
+          type: string
+      request:
+        body:
+          type: map<string, unknown>
+        name: update-a-tip-amount-request
+      response: commons.Order

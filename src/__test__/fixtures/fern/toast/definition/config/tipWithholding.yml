@@ -1,0 +1,53 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /tipWithholding
+  endpoints:
+    get:
+      path: ""
+      method: GET
+      docs: |
+        Returns a `TipWithholding`
+        object containing information about the way tip withholding
+        is configured for a restaurant. Tip withholding is a percentage
+        of employees' credit card tips that is kept by a restaurant to
+        cover credit card processing fees.
+      display-name: |
+        Get the percentage withheld for credit card tips
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: >
+              The Toast POS GUID of the restaurant that the configuration applies to.
+            type: string
+        name: |-
+          percentage-withheld-for-credit-card-tips
+          -request
+      response: TipWithholding
+types:
+  TipWithholding:
+    docs: |
+      Information about the way tip withholding is configured for
+      a restaurant. Tip withholding is a percentage of employees'
+      credit card tips and service charges that are paid to
+      employees as a gratuity that is kept by a restaurant to
+      cover credit card processing fees.
+    extends:
+      - commons.ToastReference
+    properties:
+      enabled:
+        docs: |
+          Indicates whether a restaurant location withholds a percent of
+          employees' credit card tips.
+          * `true` - the location keeps a percent of employees' credit card
+          tips.
+          * `false` - the location does not keep a percent of employees'
+          credit card tips.
+        type: optional<boolean>
+      percentage:
+        docs: |
+          The decimal percentage of credit card tips withheld. If tip
+          withholding is not `enabled`, tips will not be withheld in the
+          Toast platform regardless of this value.
+        type: optional<double>

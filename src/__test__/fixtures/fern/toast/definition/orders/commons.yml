@@ -1,0 +1,1867 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+types:
+  Payment:
+    docs: Defines a payment.
+    extends:
+      - ExternalReference
+    properties:
+      paidDate:
+        docs: The date on which the payment was made.
+        type: optional<string>
+      paidBusinessDate:
+        docs: >-
+          The business date (yyyyMMdd) on which this payment was first applied.
+          Response only.
+        type: optional<integer>
+      type:
+        docs: >
+          The payment method.
+          When `POST`ing, only `OTHER` and `CREDIT` payment types are supported.
+          For cash payments, you create an external cash payment type in Other
+          Payment Options.
+          All other types are response only.
+          Valid values:
+          * `CASH` - The guest paid in cash.
+          * `CREDIT` - The guest used a credit card.
+          * `GIFTCARD` - The guest used a gift card.
+          * `HOUSE_ACCOUNT` - The guest used funds from their house account.
+          * `REWARDCARD` - The guest used the available balance on a rewards
+          card.
+          * `LEVELUP` - The guest used the LevelUp app.
+          * `OTHER` - The payment type is a custom type configured by the
+          restaurant.
+          * `UNDETERMINED` - The payment type cannot be determined.
+        type: PaymentPropertiesType
+      cardEntryMode:
+        docs: >
+          Indicates how credit card data was obtained. Response only.
+          Valid values:
+          * `SWIPED` - The credit card was swiped through a card reader.
+          * `KEYED` - The restaurant employee typed the card number into a
+          device.
+          * `ONLINE` - The credit card information was entered online.
+          * `EMV_CHIP_SIGN` - The credit card was inserted into a chip reader.
+          * `TOKENIZED` - The credit card number is tokenized, meaning that it
+          is replaced by a series of randomly generated numbers. The authorizer
+          is able to use the token to authorize the actual credit card.
+          * `PRE_AUTHED` - The credit card was pre-authorized for an initial
+          amount. An example of pre-authorization is swiping a credit card to
+          start a bar tab. The final payment is authorized when the order is
+          complete.
+          * `SAVED_CARD` - The credit card information was retrieved from the
+          guest's account.
+          * `FUTURE_ORDER` - The credit card payment was included on a scheduled
+          order.
+          * `CONTACTLESS` - The guest used a contactless payment option to
+          provide the credit card number.
+          * `APPLE_PAY_CNP` - The guest used the Apple Pay app to make the
+          payment.
+          * `GOOGLE_PAY_CNP` - The guest used the Google Pay app to make the
+          payment.
+          * `INCREMENTAL_PRE_AUTHED` - An additional payment was added to a
+          pre-authorized card. For example, a guest uses a credit card to open a
+          bar tab. As they continue to order more drinks, the pre-authorized
+          amount is updated. The final payment is authorized when the order is
+          complete.
+          * `PARTNER_ECOM_COF` - The restaurant has the credit card on file.
+          * `CLICK_TO_PAY_CNP` - The guest used Click to Pay to make the
+          payment.
+        type: optional<CardEntryModeType>
+      amount:
+        docs: The amount of this payment, excluding tips.
+        type: double
+      tipAmount:
+        docs: The amount tipped on this payment.
+        type: double
+      amountTendered:
+        docs: >-
+          The amount tendered for this payment. The amount tendered does not
+          include the tip.
+        type: optional<double>
+      cardType:
+        docs: The type of credit card that was used. Response only.
+        type: optional<CreditCardType>
+      last4Digits:
+        docs: The last 4 digits of the credit card that was used. Response only.
+        type: optional<string>
+      originalProcessingFee:
+        docs: >-
+          The original processing fee for this payment. Populated after the
+          payment is captured. Response only.
+        type: optional<double>
+      server: optional<ExternalReference>
+      referenceCode:
+        docs: For internal use only.
+        type: optional<string>
+      cashDrawer: optional<ExternalReference>
+      refundStatus:
+        docs: |
+          Indicates whether the payment was refunded. Response only.
+          Valid values:
+          * `NONE` - The payment was not refunded.
+          * `PARTIAL` - The payment was partially refunded.
+          * `FULL` - The payment was refunded in full.
+        type: optional<RefundStatusType>
+      refund: optional<Refund>
+      paymentStatus:
+        docs: >
+          The status of this payment when the type is `CREDIT`. Response only.
+          Valid values:
+          * `OPEN` - The payment has not been presented for processing.
+          * `PROCESSING` - The payment is being processed.
+          * `AUTHORIZED_AT_RISK` - This value is no longer used.
+          * `AUTHORIZED` - The payment is approved but not yet captured. The
+          card is valid and the funds are available.
+          * `ERROR` - An error occurred during the payment processing.
+          * `ERROR_NETWORK` - Unable to connect to the payment authorizer.
+          * `DENIED` - The payment request was denied. For example, the provided
+          credit card is over its limit.
+          * `PROCESSING_VOID` - A void request for the payment is being
+          processed.
+          * `VOIDED_AT_RISK` - This value is no longer used.
+          * `CANCELLED` - The payment is canceled.
+          * `CAPTURE_IN_PROGRESS` - The payment is in the process of being
+          captured.
+          * `CAPTURED` - The payment is captured. When the payment is captured,
+          the funds are transferred to the restaurant.
+          * `VOIDED` - The payment is voided.
+        type: optional<CreditPaymentStatus>
+      voidInfo: optional<VoidInformation>
+      houseAccount: optional<ExternalReference>
+      otherPayment: optional<ExternalReference>
+      createdDevice: optional<Device>
+      lastModifiedDevice: optional<Device>
+      mcaRepaymentAmount:
+        docs: |
+          The total currency amount withheld as repayment for a
+          Toast Capital merchant cash advance (MCA). The MCA
+          repayment amount is set at the time the payment is
+          captured, which is typically hours after the actual
+          restaurant guest payment.
+          Until the `mcaRepaymentAmount`
+          is set, this value is `null`.
+          The `mcaRepaymentAmount`
+          _might_ be updated when the payment is settled, which is
+          typically one or more days after the actual guest
+          payment. Response only.
+        type: optional<double>
+      cardPaymentId:
+        docs: |
+          **Note:** this value is in limited release. Your orders API
+          integration might not include the `cardPaymentId` value.
+          A unique identifier for the credit card used for a
+          `CREDIT` type payment. The identifier string is generated
+          by the Toast platform and _does not include any
+          information related to or associated with the actual
+          credit card account._ The identifier is unique within
+          your restaurant management group.
+          The value is `null` for the following payment types:
+          * Payment types other than `CREDIT`
+          * Credit card payments entered using EMV (chip cards)
+          * Credit card payments entered by keying in card numbers
+          Response only.
+        type: optional<string>
+      paymentCardToken: optional<ToastReference>
+      giftCard: optional<ExternalReference>
+      giftCardInfo: optional<GiftCardInfo>
+      orderGuid:
+        docs: >-
+          The Toast platform identifier for the order that contains the payment.
+          Response only.
+        type: optional<string>
+      checkGuid:
+        docs: >-
+          The Toast platform identifier for the check that contains the payment.
+          Response only.
+        type: optional<string>
+      receiptToken:
+        docs: For internal use only.
+        type: optional<string>
+      cardHolderFirstName:
+        docs: For internal use only.
+        type: optional<string>
+      cardHolderLastName:
+        docs: For internal use only.
+        type: optional<string>
+      isProcessedOffline:
+        docs: |
+          For internal use only.
+        type: optional<boolean>
+      processingService:
+        docs: For internal use only.
+        type: optional<string>
+      authorizedAmount:
+        docs: For internal use only.
+        type: optional<double>
+      cardTenderType:
+        docs: For internal use only.
+        type: optional<string>
+      prepaidCardBalance:
+        docs: For internal use only.
+        type: optional<double>
+      proRatedDiscountAmount:
+        docs: For internal use only.
+        type: optional<double>
+      proRatedTaxAmount:
+        docs: For internal use only.
+        type: optional<double>
+      proRatedTotalServiceChargeAmount:
+        docs: For internal use only.
+        type: optional<double>
+      shift: optional<ExternalReference>
+      serverShift: optional<ExternalReference>
+      orderOwnerGuid:
+        docs: For internal use only.
+        type: optional<string>
+
+  ExternalReference:
+    docs: >-
+      A wrapper object with fields that allow reference to a Toast platform
+      entity by Toast GUID or a partner's identifier.
+    extends:
+      - ToastReference
+    properties:
+      externalId:
+        docs: >-
+          External identifier string that is prefixed by the naming authority.
+          You can use the orders API to set an `externalId` for an order and
+          then GET the order with that `externalId`.
+        type: optional<string>
+
+  ToastReference:
+    docs: >-
+      A wrapper object with fields that allow reference to a Toast entity by
+      Toast GUID.
+    properties:
+      guid:
+        docs: The GUID maintained by the Toast platform.
+        type: string
+      ReferemceEntityType:
+        docs: The type of object this is. Response only.
+        type: string
+
+  PaymentPropertiesType:
+    docs: >
+      The payment method.
+      When `POST`ing, only `OTHER` and `CREDIT` payment types are supported. For
+      cash payments, you create an external cash payment type in Other Payment
+      Options.
+      All other types are response only.
+      Valid values:
+      * `CASH` - The guest paid in cash.
+      * `CREDIT` - The guest used a credit card.
+      * `GIFTCARD` - The guest used a gift card.
+      * `HOUSE_ACCOUNT` - The guest used funds from their house account.
+      * `REWARDCARD` - The guest used the available balance on a rewards card.
+      * `LEVELUP` - The guest used the LevelUp app.
+      * `OTHER` - The payment type is a custom type configured by the
+      restaurant.
+      * `UNDETERMINED` - The payment type cannot be determined.
+    enum:
+      - CASH
+      - CREDIT
+      - GIFTCARD
+      - HOUSE_ACCOUNT
+      - REWARDCARD
+      - LEVELUP
+      - OTHER
+      - UNDETERMINED
+
+  CardEntryModeType:
+    docs: >
+      Indicates how credit card data was obtained. Response only.
+      Valid values:
+      * `SWIPED` - The credit card was swiped through a card reader.
+      * `KEYED` - The restaurant employee typed the card number into a device.
+      * `ONLINE` - The credit card information was entered online.
+      * `EMV_CHIP_SIGN` - The credit card was inserted into a chip reader.
+      * `TOKENIZED` - The credit card number is tokenized, meaning that it is
+      replaced by a series of randomly generated numbers. The authorizer is able
+      to use the token to authorize the actual credit card.
+      * `PRE_AUTHED` - The credit card was pre-authorized for an initial amount.
+      An example of pre-authorization is swiping a credit card to start a bar
+      tab. The final payment is authorized when the order is complete.
+      * `SAVED_CARD` - The credit card information was retrieved from the
+      guest's account.
+      * `FUTURE_ORDER` - The credit card payment was included on a scheduled
+      order.
+      * `CONTACTLESS` - The guest used a contactless payment option to provide
+      the credit card number.
+      * `APPLE_PAY_CNP` - The guest used the Apple Pay app to make the payment.
+      * `GOOGLE_PAY_CNP` - The guest used the Google Pay app to make the
+      payment.
+      * `INCREMENTAL_PRE_AUTHED` - An additional payment was added to a
+      pre-authorized card. For example, a guest uses a credit card to open a bar
+      tab. As they continue to order more drinks, the pre-authorized amount is
+      updated. The final payment is authorized when the order is complete.
+      * `PARTNER_ECOM_COF` - The restaurant has the credit card on file.
+      * `CLICK_TO_PAY_CNP` - The guest used Click to Pay to make the payment.
+    enum:
+      - SWIPED
+      - KEYED
+      - ONLINE
+      - EMV_CHIP_SIGN
+      - TOKENIZED
+      - PRE_AUTHED
+      - SAVED_CARD
+      - FUTURE_ORDER
+      - CONTACTLESS
+      - APPLE_PAY_CNP
+      - GOOGLE_PAY_CNP
+      - INCREMENTAL_PRE_AUTHED
+      - PARTNER_ECOM_COF
+      - CLICK_TO_PAY_CNP
+
+  CreditCardType:
+    docs: The type of credit card that was used. Response only.
+    enum:
+      - VISA
+      - MASTERCARD
+      - AMEX
+      - DISCOVER
+      - JCB
+      - DINERS
+      - CIT
+      - MAESTRO
+      - LASER
+      - SOLO
+      - INTERAC
+      - UNKNOWN
+
+  RefundStatusType:
+    docs: |
+      Indicates whether the payment was refunded. Response only.
+      Valid values:
+      * `NONE` - The payment was not refunded.
+      * `PARTIAL` - The payment was partially refunded.
+      * `FULL` - The payment was refunded in full.
+    enum:
+      - NONE
+      - PARTIAL
+      - FULL
+
+  CreditPaymentStatus:
+    docs: >
+      The status of this payment when the type is `CREDIT`. Response only.
+      Valid values:
+      * `OPEN` - The payment has not been presented for processing.
+      * `PROCESSING` - The payment is being processed.
+      * `AUTHORIZED_AT_RISK` - This value is no longer used.
+      * `AUTHORIZED` - The payment is approved but not yet captured. The card is
+      valid and the funds are available.
+      * `ERROR` - An error occurred during the payment processing.
+      * `ERROR_NETWORK` - Unable to connect to the payment authorizer.
+      * `DENIED` - The payment request was denied. For example, the provided
+      credit card is over its limit.
+      * `PROCESSING_VOID` - A void request for the payment is being processed.
+      * `VOIDED_AT_RISK` - This value is no longer used.
+      * `CANCELLED` - The payment is canceled.
+      * `CAPTURE_IN_PROGRESS` - The payment is in the process of being captured.
+      * `CAPTURED` - The payment is captured. When the payment is captured, the
+      funds are transferred to the restaurant.
+      * `VOIDED` - The payment is voided.
+    enum:
+      - OPEN
+      - PROCESSING
+      - AUTHORIZED_AT_RISK
+      - AUTHORIZED
+      - ERROR
+      - ERROR_NETWORK
+      - DENIED
+      - PROCESSING_VOID
+      - VOIDED_AT_RISK
+      - CANCELLED
+      - CAPTURE_IN_PROGRESS
+      - CAPTURED
+      - VOIDED
+
+  Refund:
+    docs: A currency amount removed from a guest payment.
+    properties:
+      refundAmount:
+        docs: The amount of the refund, excluding the tip.
+        type: optional<double>
+      tipRefundAmount:
+        docs: The amount of the tip refund.
+        type: optional<double>
+      refundDate:
+        docs: The date and time when the refund was made.
+        type: optional<string>
+      refundBusinessDate:
+        docs: >-
+          The business date (yyyyMMdd) on which this refund was created.
+          Response only.
+        type: optional<integer>
+      refundTransaction: optional<ToastReference>
+      refundStrategy:
+        docs: |
+          For internal use only.
+        type: optional<RefundStrategyType>
+
+  RefundStrategyType:
+    docs: |
+      For internal use only.
+    enum:
+      - LEGACY_INCLUDE_REFUND_IN_AMOUNT_DUE
+      - IGNORE_REFUND_IN_AMOUNT_DUE
+
+  VoidInformation:
+    docs: Information about a void applied to a check or item.
+    properties:
+      voidUser: optional<ExternalReference>
+      voidApprover: optional<ExternalReference>
+      voidDate:
+        docs: The date on which the void was made.
+        type: optional<string>
+      voidBusinessDate:
+        docs: >-
+          The business date (yyyyMMdd) on which the void was made. Response
+          only.
+        type: optional<integer>
+      voidReason: optional<ExternalReference>
+
+  Device:
+    docs: >
+      The *Device ID* value that the Toast platform assigns to a specific Toast
+      POS device.
+      The `id` value is a unique identifier for a device.
+      To find the ID for a Toast POS device, from the overflow  menu (⋮) select
+      *Device Status* and then select the *Device* tab.
+    properties:
+      id:
+        docs: The physical id of the device
+        type: optional<string>
+
+  GiftCardInfo:
+    docs: Reserved for future use.
+    extends:
+      - ToastReference
+    properties:
+      storedValueBalance:
+        docs: Reserved for future use.
+        type: optional<double>
+      rewardsBalance:
+        docs: Reserved for future use.
+        type: optional<double>
+      authRequestId:
+        docs: Reserved for future use.
+        type: optional<string>
+      authorizationState:
+        docs: Reserved for future use.
+        type: optional<AuthorizationStateType>
+      cardNumberIdentifier:
+        docs: Reserved for future use.
+        type: optional<string>
+
+  AuthorizationStateType:
+    docs: Reserved for future use.
+    enum:
+      - VALIDATED
+      - NONE
+      - PAID
+      - REVERSED
+      - DENIED
+      - ERROR
+      - ADJUSTING
+
+  Order:
+    docs: |
+      A Toast platform order is composed of one or more checks. Each check has 
+      one or more menu item selections.
+    extends:
+      - ExternalReference
+    properties:
+      openedDate:
+        docs: >
+          The business date of the order.
+          For dine-in and as soon as possible (ASAP) orders, `openedDate` should
+          match `createdDate`.
+          For scheduled orders, `openedDate` should match `promisedDate`.
+          If you do not provide a value for 
+          `openedDate` value when you `POST` a new order, the
+          business date of the order is set to the restaurant
+          business day that corresponds to the current date and
+          time.
+          The business date of an order is affected by the
+          business date cutoff time for a restaurant, which is
+          available from the restaurants API in the `closeoutHour` property.
+        type: optional<string>
+      modifiedDate:
+        docs: >-
+          The most recent date that the order, or a check or menu item selection
+          in the order, was modified.
+        type: optional<string>
+      promisedDate:
+        docs: >
+          For scheduled orders, the date and time that the order is scheduled to
+          be fulfilled.
+          For dine-in and as soon as possible (ASAP) orders, `promisedDate` is
+          `null`.
+        type: optional<string>
+      channelGuid:
+        docs: >-
+          For internal use only. The GUID representing the ordering channel that
+          is attributed to the order. Examples of channels include Doordash and
+          Toast Online Ordering.
+        type: optional<string>
+      diningOption: ExternalReference
+      checks:
+        docs: |
+          The checks for this order. Most orders have one check.
+          If the check is split, then there are multiple checks.
+        type: list<Check>
+      table: optional<ExternalReference>
+      serviceArea: optional<ExternalReference>
+      restaurantService: optional<ExternalReference>
+      revenueCenter: optional<ExternalReference>
+      source:
+        docs: |
+          Indicates the way that the order was placed.
+          Valid values:
+          * `In Store`
+          * `Online`
+          * `Order-and-Pay-at-Table`
+          * `API`
+          * `Kiosk`
+          * `Caller Id`
+          * `Google`
+          * `Invoice`
+          * `Toast Pickup App`
+          * `Toast Local`
+          * `Branded Online Ordering`
+          * `Catering`
+          * `Catering Online Ordering`
+          * `Grubhub` (deprecated)
+          Response only.
+        type: optional<string>
+      duration:
+        docs: The number of seconds between creation and payment. Response only.
+        type: optional<integer>
+      deliveryInfo: optional<DeliveryInfo>
+      requiredPrepTime:
+        docs: >
+          The amount of time that it will take to prepare the order. This value
+          overrides the 
+          default `deliveryPrepTime` or `takeoutPrepTime` that normally controls
+          auto-firing for scheduled orders.
+          You can use `requiredPrepTime` to handle atypical orders that will
+          take more time than usual for a restaurant to prepare.
+          Express the required preparation time in ISO-8601 duration format.
+          Must be greater than zero and be an 
+          increment of five minutes. For example, the value "PT15M" sets the
+          required preparation time for the order to 15 minutes.
+        type: optional<string>
+      estimatedFulfillmentDate:
+        docs: >
+          The date and time that the order is expected to be ready for pickup or
+          to be delivered.
+          This value is only set when the order dining option uses the
+          `DELIVERY` or `TAKE_OUT` dining behavior. For other dining options,
+          the value is `null`.
+          Response only.
+        type: optional<string>
+      numberOfGuests:
+        docs: |
+          The number of restaurant guests that are associated with the
+          order. For example, for a dine-in order, this might be the
+          number of guests at a table.
+        type: optional<integer>
+      voided:
+        docs: Set to `true` if this order was voided. Response only.
+        type: optional<boolean>
+      voidDate:
+        docs: The date on which this order was voided. Response only.
+        type: optional<string>
+      voidBusinessDate:
+        docs: >-
+          The business date (yyyyMMdd) on which this order was voided. Response
+          only.
+        type: optional<integer>
+      paidDate:
+        docs: >-
+          The most recent date on which this order received payment. If not
+          specified when `POST`ing, it is set to the current system time.
+        type: optional<string>
+      closedDate:
+        docs: >
+          The most recent date on which the order payment status changed to
+          `CLOSED`.
+          This status is not returned for the order. The order is simply
+          `CLOSED` when all of the checks on the order are `CLOSED`.
+        type: optional<string>
+      deletedDate:
+        docs: |
+          The date and time when the order was deleted.
+          The `deletedDate` value only
+          applies when the `deleted` value is `true`.
+          If `deleted` is `false`, the value
+          of `deletedDate` is the UNIX epoch, `1970-01-01T00:00:00.000+0000`.
+        type: optional<string>
+      deleted:
+        docs: |
+          Set to `true` if this order is deleted. Response only.
+          For example, if you combine a
+          check into another order, the original order for the check is deleted.
+        type: optional<boolean>
+      businessDate:
+        docs: >-
+          The business date (yyyyMMdd) on which the order was fulfilled.
+          Response only.
+        type: optional<integer>
+      server: optional<ExternalReference>
+      owner: optional<ExternalReference>
+      pricingFeatures:
+        docs: Pricing features that this order is using.
+        type: optional<list<PricingFeaturesType>>
+      approvalStatus:
+        docs: |
+          The current state of the order in the restaurant order
+          fulfillment process. For example, the `approvalStatus`
+          can indicate that an order is waiting for a restaurant
+          employee to approve it or that the order is in a
+          restaurant kitchen being fulfilled. Response only.
+          Valid values:
+          * `NEEDS_APPROVAL` - The order is created but will
+          not be fulfilled by the restaurant until an employee
+          approves it.
+          * `APPROVED` - The order is being fulfilled by the
+          restaurant or it was fulfilled in the past. Orders
+          remain in this state indefinitely after they are
+          fulfilled.
+          * `FUTURE` - The order is expected to be fulfilled by the
+          restaurant at a future date and time. Restaurant
+          employees will receive information about the order at the
+          date and time that it is ready to be fulfilled.
+          * `NOT_APPROVED` - Restaurant employees received
+          information about the order but did not approve it for
+          fulfillment. An order enters this state after a period of
+          time passes without a restaurant employee approving it.
+        type: optional<ApprovalStatusType>
+      guestOrderStatus:
+        docs: |
+          Reserved for future use.
+        type: optional<string>
+      createdDevice: optional<Device>
+      createdDate:
+        docs: The date and time that the Toast platform received the order.
+        type: optional<string>
+      initialDate:
+        docs: >-
+          Reserved for future use. Do not use the `initialDate` value for
+          integration development.
+        type: optional<integer>
+      lastModifiedDevice: optional<Device>
+      curbsidePickupInfo: optional<CurbsidePickupInfo>
+      deliveryServiceInfo: optional<DeliveryServiceInfo>
+      marketplaceFacilitatorTaxInfo: optional<MarketplaceFacilitatorTaxInfo>
+      createdInTestMode:
+        docs: For internal use only.
+        type: optional<boolean>
+
+  PricingFeaturesType:
+    docs: A specific pricing feature used to price out the order.
+    enum:
+      - TAXESV2
+      - TAXESV3
+
+  ApprovalStatusType:
+    docs: |
+      The current state of the order in the restaurant order
+      fulfillment process. For example, the `approvalStatus`
+      can indicate that an order is waiting for a restaurant
+      employee to approve it or that the order is in a
+      restaurant kitchen being fulfilled. Response only.
+      Valid values:
+      * `NEEDS_APPROVAL` - The order is created but will
+      not be fulfilled by the restaurant until an employee
+      approves it.
+      * `APPROVED` - The order is being fulfilled by the
+      restaurant or it was fulfilled in the past. Orders
+      remain in this state indefinitely after they are
+      fulfilled.
+      * `FUTURE` - The order is expected to be fulfilled by the
+      restaurant at a future date and time. Restaurant
+      employees will receive information about the order at the
+      date and time that it is ready to be fulfilled.
+      * `NOT_APPROVED` - Restaurant employees received
+      information about the order but did not approve it for
+      fulfillment. An order enters this state after a period of
+      time passes without a restaurant employee approving it.
+    enum:
+      - NEEDS_APPROVAL
+      - APPROVED
+      - FUTURE
+      - NOT_APPROVED
+
+  Check:
+    docs: Represents a single check within an order.
+    extends:
+      - ExternalReference
+    properties:
+      createdDate:
+        docs: The date and time that the Toast platform received the check.
+        type: optional<string>
+      openedDate:
+        docs: >-
+          The date on which this check was opened. If not specified, it is set
+          to the current system time.
+        type: optional<string>
+      closedDate:
+        docs: >-
+          The most recent date on which this check's payment status was set to
+          `CLOSED`.
+        type: optional<string>
+      modifiedDate:
+        docs: The most recent date on which this check was modified.
+        type: optional<string>
+      deletedDate:
+        docs: >
+          The date on which this check was deleted.
+          `deletedDate` is only applicable when `deleted` is true.
+          If `deleted` is false, then `deletedDate` is set to the UNIX epoch,
+          `1970-01-01T00:00:00.000+0000`.
+        type: optional<string>
+      deleted:
+        docs: Set to `true` if this check was deleted.
+        type: optional<boolean>
+      selections: list<Selection>
+      customer: optional<Customer>
+      appliedLoyaltyInfo: optional<AppliedLoyaltyInfo>
+      taxExempt:
+        docs: >-
+          Set to `true` if this check is tax exempt. The tax exempt number is
+          not yet supported.
+        type: optional<boolean>
+      displayNumber:
+        docs: >-
+          Generally starts at one each day and counts up. The Toast platform
+          fills this in if it is not specified when the order is POSTed. Not
+          guaranteed to be unique.
+        type: optional<string>
+      appliedServiceCharges:
+        docs: Any restaurant-configured service charges that applied to this check.
+        type: optional<list<AppliedServiceCharge>>
+      amount:
+        docs: >-
+          The total calculated price of this check after discounts. Does not
+          include taxes. Response only.
+        type: optional<double>
+      netAmount:
+        docs: For internal use only.
+        type: optional<double>
+      taxAmount:
+        docs: >-
+          The calculated tax amount. Includes service charge and item level
+          taxes. Response only.
+        type: optional<double>
+      tipAmount:
+        docs: For internal use only.
+        type: optional<double>
+      totalAmount:
+        docs: >-
+          The total calculated price of this check including discounts and
+          taxes. Not affected by refunds. Response only.
+        type: optional<double>
+      totalDiscountAmount:
+        docs: For internal use only.
+        type: optional<double>
+      payments:
+        docs: Payments made on this check.
+        type: optional<list<Payment>>
+      tabName:
+        docs: >
+          The name of the tab on this check. This displays on the KDS (Kitchen
+          Display System) for pending orders.
+          The `tabName` value can contain up to 255 characters.
+        type: optional<string>
+      paymentStatus:
+        docs: >
+          The payment status of this check.
+          Valid values:
+          * `OPEN` - There is an outstanding balance.
+          * `PAID` - A credit card payment was applied, but the tip has not been
+          adjusted.
+          * `CLOSED`  - There is no remaining amount due on this check. For
+          credit card payments, the payment has been adjusted to reflect the
+          tip. Toast does not prevent a `CLOSED` check from transitioning back
+          to `OPEN` or `PAID`.
+          Response only.
+        type: optional<CheckPaymentStatus>
+      appliedDiscounts:
+        docs: >-
+          The discounts applied to this check. In a `POST` request, only one
+          `appliedDiscount` is allowed per check.
+        type: optional<list<AppliedDiscount>>
+      voided:
+        docs: True if this check is voided. Response only.
+        type: optional<boolean>
+      voidDate:
+        docs: The date when this check was voided. Response only.
+        type: optional<string>
+      voidBusinessDate:
+        docs: >-
+          The business date (yyyyMMdd) on which this check was voided. Response
+          only.
+        type: optional<integer>
+      paidDate:
+        docs: >-
+          The most recent date when this check received payment. If not
+          specified when `POST`ing, it is set to the current system time.
+        type: optional<string>
+      pickedUpDate:
+        docs: For internal use only.
+        type: optional<string>
+      createdDevice: optional<Device>
+      lastModifiedDevice: optional<Device>
+      appliedPreauthInfo: optional<AppliedPreauthInfo>
+      shift: optional<ExternalReference>
+      driverShift: optional<ExternalReference>
+      removedSelections:
+        docs: For internal use only.
+        type: optional<list<RemovedSelection>>
+
+  CheckPaymentStatus:
+    docs: >
+      The payment status of this check.
+      Valid values:
+      * `OPEN` - There is an outstanding balance.
+      * `PAID` - A credit card payment was applied, but the tip has not been
+      adjusted.
+      * `CLOSED`  - There is no remaining amount due on this check. For credit
+      card payments, the payment has been adjusted to reflect the tip. Toast
+      does not prevent a `CLOSED` check from transitioning back to `OPEN` or
+      `PAID`.
+      Response only.
+    enum:
+      - OPEN
+      - PAID
+      - CLOSED
+
+  Selection:
+    docs: >
+      A `Selection` object can represent either a primary item (for example,
+      `Check.selections`) or a modifier (`Selection.modifiers`) selection.
+      Quantity defaults to `1`.
+      For a `POST` operation, all selections must have valid `item` and
+      `itemGroup` fields. The `item` and `itemGroup` values can be `null` for
+      `GET` requests. For example, they are `null` for gift cards and on special
+      requests.
+      To specify a modifier selection, add it to the `modifiers` list of
+      another selection. Each modifier selection must have its `optionGroup`
+      field
+      set correctly, because a `MenuItem` can be included in multiple
+      `MenuOptionGroups`, potentially with different prices or sizing.
+    extends:
+      - ExternalReference
+    properties:
+      item: ConfigReference
+      itemGroup: optional<ConfigReference>
+      optionGroup: optional<ConfigReference>
+      preModifier: optional<ExternalReference>
+      quantity:
+        docs: >-
+          Quantity ordered. For items sold by weight, a decimal number. For
+          discrete items, a counting number.
+        type: double
+      seatNumber:
+        docs: |
+          Indicates which guest seat at a restaurant table ordered
+          a menu item selection. Restaurant employees can choose the
+          seat number when they add a menu item to a guest check.
+          * A positive integer value indicates the seat number for
+            the menu item.
+          * `0` - Indicates that the menu item is shared by
+            multiple guests.
+          * `-1` - Indicates that the restaurant employee did not
+            select a seat for the menu item.
+          Response only.
+        type: optional<integer>
+      unitOfMeasure:
+        docs: >
+          The unit of measure required for weighing the item.
+          The default is `NONE`, which means that the item is not meant to be
+          weighed.
+        type: optional<UnitofMeasureType>
+      selectionType:
+        docs: >
+          Specifies whether this selection is a special request or other
+          off-menu sale.
+          If `null` or `NONE`, describes a normal modifier or item selection.
+        type: optional<SelectionType>
+      salesCategory: optional<ExternalReference>
+      appliedDiscounts:
+        docs: The itemized discounts that are applied to this item. Response only.
+        type: optional<list<AppliedDiscount>>
+      deferred:
+        docs: >-
+          Whether this selection is a deferred revenue transaction, such as a
+          gift card sale.
+        type: optional<boolean>
+      preDiscountPrice:
+        docs: Gross sale price for this selection. Excludes tax. Response only.
+        type: optional<double>
+      price:
+        docs: >-
+          Net price for this selection. The final price of the item after
+          considering discounts (including discounts at the check level),
+          quantity adjustments, and modifier prices at the time the item was
+          selected for purchase. Response only.
+        type: optional<double>
+      tax:
+        docs: The total tax amount for this selection. Response only.
+        type: optional<double>
+      voided:
+        docs: Set to `true` if this selection is voided. Response only.
+        type: optional<boolean>
+      voidDate:
+        docs: The date on which this selection was voided. Response only.
+        type: optional<string>
+      voidBusinessDate:
+        docs: >-
+          The business date (yyyyMMdd) on which this selection was voided.
+          Response only.
+        type: optional<integer>
+      voidReason: optional<ExternalReference>
+      refundDetails: optional<RefundDetails>
+      displayName:
+        docs: |
+          The display name of the selection.
+          Can be used to set a special request value.
+          Otherwise, it is generated from this selection's item property.
+        type: optional<string>
+      createdDate:
+        docs: >-
+          The date on which this selection was created. If not specified,
+          defaults to the current time.
+        type: optional<string>
+      modifiedDate:
+        docs: >-
+          The date on which this selection was last modified. If not specified,
+          defaults to the current time.
+        type: optional<string>
+      modifiers:
+        docs: A list of modifiers that apply to this selection.
+        type: optional<list<Selection>>
+      fulfillmentStatus:
+        docs: |
+          Indicates the stage of the preparation workflow that the
+          menu item selection is in.
+          The `fulfillmentStatus` of a
+          menu item selection changes as restaurant employees move
+          the item through the functions of the Toast POS, for
+          example order entry and the kitchen display system (KDS).
+          Response only.
+          Valid values:
+          * `NEW` - The menu item selection was added to a
+            check but is not yet sent to the KDS for
+            preparation.
+          * `HOLD` - A restaurant employee paused the menu
+            item selection so that it does not appear in the
+            KDS for preparation.
+          * `SENT` - The menu item selection was fired and
+            appears in the KDS for preparation.
+          * `READY` - Preparation is complete. The menu item
+            selection is fulfilled and no longer appears in
+            the KDS. If your restaurant does not use the Toast platform
+            KDS, then order items do not reach the `READY`
+            status.
+          </ul>
+        type: optional<FulfillmentStatus>
+      taxInclusion:
+        docs: |
+          Indicates whether the menu item price includes one or more tax
+          amounts. If the menu item is a modifier for another menu item
+          selection, it always inherits the tax inclusion behavior of the menu
+          item that it applies to.
+          Valid values:
+          * `INCLUDED` - The menu item price includes one or more tax amounts.
+          * `NOT_INCLUDED` - The menu item price does not include any tax
+            amounts.
+          * `INHERITED` - The menu item is a modifier for another menu item
+            selection in the check. The `taxInclusion` value of the parent menu
+            item selection applies to the modifier. If a menu item selection
+            *that is not a modifier* inherits tax inclusion behavior from a
+            menu or menu group, the `taxInclusion` value is either
+            `INCLUDED` or `NOT_INCLUDED`.
+        type: optional<TaxInclusionType>
+      appliedTaxes:
+        docs: >-
+          An array of `AppliedTaxRate` objects that contain information about
+          tax payments made for the selection. Response only.
+        type: optional<list<AppliedTaxRate>>
+      diningOption: optional<ExternalReference>
+      openPriceAmount:
+        docs: |
+          A non-negative currency amount that sets the price of a
+          menu item that is configured to use the *Open Price*
+          pricing strategy. If you do not supply an
+          `openPriceAmount` value for an open price menu item, the
+          orders API sets the price to 0.00.
+          If a menu item is configured to use tax-inclusive
+          pricing, the orders API calculates the base price and tax
+          amount based on the open price that you specify. _The
+          open-price amount includes both the base-price and
+          inclusive tax amount._
+          `POST` only. The `openPriceAmount` value is not
+          present in orders API return data. It is used to
+          populate `receiptLinePrice`.
+        type: optional<double>
+      receiptLinePrice:
+        docs: >
+          The price of the menu item selection before any quantity, taxes, 
+          discounts, and modifier option adjustments are applied.
+          For example, if the menu item selection is for two orders of fries, 
+          `receiptLinePrice` is the price of one order of fries. If a menu item
+          selection 
+          is for three large drinks, receiptLinePrice is the price of one large
+          drink.
+          Populated based on the menu configuration, or using the value provided
+          in 
+          `externalPriceAmount` or `openPriceAmount`.
+        type: optional<double>
+      optionGroupPricingMode:
+        docs: >-
+          Information about how the modifier group affects the pricing of its
+          parent item.
+        type: optional<OptionGroupPricingModeType>
+      externalPriceAmount:
+        docs: |
+          The menu item price that was calculated by the
+          marketplace facilitator organization that created the
+          order.
+          `POST` only. The orders API does not include the
+          `externalPriceAmount` value in return data. It is
+          used to populate `receiptLinePrice`.
+          **Note**: you can only include this information if your
+          Toast API client is associated with a designated
+          marketplace facilitator organization. Most Toast API
+          clients do not create marketplace facilitator orders.
+        type: optional<double>
+      toastGiftCard: optional<ToastReference>
+      storedValueTransactionId:
+        docs: |
+          For internal use only.
+        type: optional<double>
+
+  UnitofMeasureType:
+    docs: >
+      The unit of measure required for weighing the item.
+      The default is `NONE`, which means that the item is not meant to be
+      weighed.
+    enum:
+      - NONE
+      - LB
+      - OZ
+      - KG
+      - G
+
+  SelectionType:
+    docs: >
+      Specifies whether this selection is a special request or other off-menu
+      sale.
+      If `null` or `NONE`, describes a normal modifier or item selection.
+    enum:
+      - NONE
+      - OPEN_ITEM
+      - SPECIAL_REQUEST
+      - PORTION
+      - HOUSE_ACCOUNT_PAY_BALANCE
+
+  FulfillmentStatus:
+    docs: |
+      Indicates the stage of the preparation workflow that the
+      menu item selection is in.
+      The `fulfillmentStatus` of a
+      menu item selection changes as restaurant employees move
+      the item through the functions of the Toast POS, for
+      example order entry and the kitchen display system (KDS).
+      Response only.
+      Valid values:
+      * `NEW` - The menu item selection was added to a
+        check but is not yet sent to the KDS for
+        preparation.
+      * `HOLD` - A restaurant employee paused the menu
+        item selection so that it does not appear in the
+        KDS for preparation.
+      * `SENT` - The menu item selection was fired and
+        appears in the KDS for preparation.
+      * `READY` - Preparation is complete. The menu item
+        selection is fulfilled and no longer appears in
+        the KDS. If your restaurant does not use the Toast platform
+        KDS, then order items do not reach the `READY`
+        status.
+      </ul>
+    enum:
+      - NEW
+      - HOLD
+      - SENT
+      - READY
+
+  TaxInclusionType:
+    docs: |
+      Indicates whether the menu item price includes one or more tax
+      amounts. If the menu item is a modifier for another menu item
+      selection, it always inherits the tax inclusion behavior of the menu
+      item that it applies to.
+      Valid values:
+      * `INCLUDED` - The menu item price includes one or more tax amounts.
+      * `NOT_INCLUDED` - The menu item price does not include any tax
+        amounts.
+      * `INHERITED` - The menu item is a modifier for another menu item
+        selection in the check. The `taxInclusion` value of the parent menu
+        item selection applies to the modifier. If a menu item selection
+        *that is not a modifier* inherits tax inclusion behavior from a
+        menu or menu group, the `taxInclusion` value is either
+        `INCLUDED` or `NOT_INCLUDED`.
+    enum:
+      - INCLUDED
+      - NOT_INCLUDED
+      - INHERITED
+
+  OptionGroupPricingModeType:
+    docs: >-
+      Information about how the modifier group affects the pricing of its parent
+      item.
+    enum:
+      - INCLUDED
+      - FIXED_PRICE
+      - ADJUSTS_PRICE
+      - REPLACES_PRICE
+      - LOCATION_SPECIFIC_PRICE
+
+  ConfigReference:
+    docs: |
+      A wrapper object containing identifier values for Toast platform entities.
+    extends:
+      - ToastReference
+    properties:
+      multiLocationId:
+        docs: >
+          A consistent identifier for Toast platform entities, such
+          as menu items, that applies to all versions of a shared
+          entity at all locations in a restaurant group.
+          For example, you can use the `multiLocationId` value to
+          identify menu entities that are versions of a shared menu
+          entity. For more information about the menus API `multilocationId`
+          value, see
+          [the _Toast Developer
+          Guide_](https://doc.toasttab.com/doc/devguide/apiUnderstandingGuidsEntityIdentifiersAndMultilocationIds_V2.html#apiMultilocationIdValues_V2).
+        type: optional<string>
+      externalId:
+        docs: |
+          An external identifier that is prefixed by a naming
+          authority. Deprecated for use in `ConfigReference`.
+        type: optional<string>
+
+  AppliedDiscount:
+    docs: >
+      A discount applied to a check or item. The Toast platform calculates
+      service
+      charges before it applies discounts. The system calculates tax after
+      applying
+      discounts.
+      In a `POST` request, you cannot apply open percent discounts. You can
+      apply open amount discounts.
+      You can only apply one discount to a menu item selection. For more
+      information, see
+      [the _Toast Developer
+      Guide_](https://doc.toasttab.com/doc/devguide/apiDiscountingOrders.html).
+    extends:
+      - ExternalReference
+    properties:
+      name:
+        docs: The name of the applied discount. Response only.
+        type: optional<string>
+      discountAmount:
+        docs: The discount amount. This amount is subtracted from the check or item.
+        type: optional<double>
+      nonTaxDiscountAmount:
+        docs: |
+          The amount that a discount reduces a menu item price,
+          excluding any discount amount applied to taxes.
+          In most cases, a discount only applies to the menu item price, and
+          the `nonTaxDiscountAmount` is the same as the `discountAmount`.
+          If you apply a discount to a menu item that includes tax in
+          its price, the `nonTaxDiscountAmount` is less than `discountAmount`.
+        type: optional<double>
+      discount: optional<ToastReference>
+      triggers:
+        docs: Optional items that triggered this discount. Response only.
+        type: optional<list<AppliedDiscountTrigger>>
+      approver: optional<ExternalReference>
+      processingState:
+        docs: |
+          Applies to loyalty program discounts only. Loyalty
+          program reward discounts are validated and then applied,
+          or redeemed, by the third-party loyalty program service
+          provider depending on the state of the Toast platform order.
+          This value indicates the state of the discount in that
+          validation and application process. Response only.
+          Valid values:
+          <ul>
+            <li><code>PENDING_APPLIED</code> - The loyalty program
+            service provider confirmed that the reward discount
+            is valid for the order and customer. The reward is not yet
+            redeemed, or applied to the customer's loyalty
+            account.</li>
+            <li><code>APPLIED</code> - The reward discount is
+            redeemed. The reward is no longer available from the
+            customer's loyalty program account.</li>
+            <li><code>PENDING_VOID</code> - The reward discount was
+            removed from the Toast platform order. The reward is not
+            available from the customer's loyalty program account
+            until the loyalty program service provider processes
+            the void operation.</li>
+            <li><code>VOID</code> - The reward discount was removed
+            from the Toast platform order and the reward is available from
+            the customer's loyalty program account again.</li>
+          </ul>
+        type: optional<ProcessingStateType>
+      loyaltyDetails: optional<LoyaltyDetails>
+      comboItems:
+        docs: >-
+          A list of menu item selections that this combo discount applies to.
+          Empty for non-combo discounts. Response only.
+        type: optional<list<ExternalReference>>
+      appliedPromoCode:
+        docs: |
+          The promo code that was applied for this discount.
+          For a POSTed order, the Toast platform cannot validate the promo code.
+        type: optional<string>
+      discountType:
+        docs: >
+          The behavior of this discount.
+          Valid values:
+          * `BOGO` - Buy One, Get One. The guest receives a discount based on
+          purchasing a specific item or items.
+          * `PERCENT` - The guest receives a specific percentage off of the
+          price.
+          * `FIXED` - The guest receives a fixed currency amount off of the
+          price.
+          * `OPEN_PERCENT` - The guest receives a percentage off of the price.
+          The percentage is specified when the order is placed.
+          * `OPEN_FIXED` - The guest receives a currency amount off of the
+          price. The amount is specified when the order is placed.
+          * `FIXED_TOTAL` - The guest pays a specified discounted price when
+          they purchase specific items. Also referred to as a combo discount.
+        type: optional<DiscountBehavior>
+      discountPercent:
+        docs: >-
+          The percent value (0-100) of the applied discount when the
+          `discountType` is `PERCENT` or `OPEN_PERCENT`. For other discount
+          types, this value is `null`.
+        type: optional<double>
+
+  ProcessingStateType:
+    docs: |
+      Applies to loyalty program discounts only. Loyalty
+      program reward discounts are validated and then applied,
+      or redeemed, by the third-party loyalty program service
+      provider depending on the state of the Toast platform order.
+      This value indicates the state of the discount in that
+      validation and application process. Response only.
+      Valid values:
+      <ul>
+        <li><code>PENDING_APPLIED</code> - The loyalty program
+        service provider confirmed that the reward discount
+        is valid for the order and customer. The reward is not yet
+        redeemed, or applied to the customer's loyalty
+        account.</li>
+        <li><code>APPLIED</code> - The reward discount is
+        redeemed. The reward is no longer available from the
+        customer's loyalty program account.</li>
+        <li><code>PENDING_VOID</code> - The reward discount was
+        removed from the Toast platform order. The reward is not
+        available from the customer's loyalty program account
+        until the loyalty program service provider processes
+        the void operation.</li>
+        <li><code>VOID</code> - The reward discount was removed
+        from the Toast platform order and the reward is available from
+        the customer's loyalty program account again.</li>
+      </ul>
+    enum:
+      - PENDING_APPLIED
+      - APPLIED
+      - PENDING_VOID
+      - VOID
+
+  DiscountBehavior:
+    docs: >
+      The behavior of this discount.
+      Valid values:
+      * `BOGO` - Buy One, Get One. The guest receives a discount based on
+      purchasing a specific item or items.
+      * `PERCENT` - The guest receives a specific percentage off of the price.
+      * `FIXED` - The guest receives a fixed currency amount off of the price.
+      * `OPEN_PERCENT` - The guest receives a percentage off of the price. The
+      percentage is specified when the order is placed.
+      * `OPEN_FIXED` - The guest receives a currency amount off of the price.
+      The amount is specified when the order is placed.
+      * `FIXED_TOTAL` - The guest pays a specified discounted price when they
+      purchase specific items. Also referred to as a combo discount.
+    enum:
+      - BOGO
+      - PERCENT
+      - FIXED
+      - OPEN_PERCENT
+      - OPEN_FIXED
+      - FIXED_TOTAL
+
+  AppliedDiscountTrigger:
+    docs: The Selection that triggered the application of this discount
+    properties:
+      selection: optional<ExternalReference>
+      quantity:
+        docs: The amount of the selection used to trigger the applied discount.
+        type: optional<double>
+
+  LoyaltyDetails:
+    docs: >-
+      Information about the loyalty program discount that is applied to a check.
+      The loyalty program account is identified in the `AppliedLoyaltyInfo`
+      value for the check.
+    properties:
+      vendor:
+        docs: >-
+          The specific loyalty program service provider that supports the
+          loyalty account.
+        type: VendorType
+      referenceId:
+        docs: |
+          The identifier of the loyalty program discount that
+          is recognized by the loyalty program service provider.
+          The Toast platform transmits the discount identifier to the service
+          provider to determine the validity and amount of the discount.
+        type: string
+
+  VendorType:
+    docs: >-
+      The specific loyalty program service provider that supports the loyalty
+      account.
+    enum:
+      - TOAST
+      - PUNCHH
+      - PUNCHH2
+      - PAYTRONIX
+      - APPFRONT
+      - INTEGRATION
+
+  RefundDetails:
+    docs: |
+      Information about refunded currency amounts for an item
+      selection, modifier option, or service charge. The refund
+      information includes separate values for the pre-tax value
+      being refunded and the tax amount being refunded.
+    properties:
+      refundAmount:
+        docs: |
+          The value of the menu item or service charge (excluding taxes) being
+          refunded. Includes the value of any nested modifier options that
+          increased the price of the item or modifier option (an upcharge for
+          the modifier option).
+        type: optional<double>
+      taxRefundAmount:
+        docs: |
+          The tax amount being refunded.
+        type: optional<double>
+      refundTransaction: optional<ToastReference>
+
+  AppliedTaxRate:
+    docs: A tax rate that is applied to an item or service charge.
+    extends:
+      - ToastReference
+    properties:
+      TaxRateEntityType:
+        docs: The type of object this is.
+        type: optional<string>
+      taxRate: optional<ToastReference>
+      name:
+        docs: The name of the tax rate.
+        type: optional<string>
+      rate:
+        docs: The tax rate, which can be a fixed amount, a percentage, or null.
+        type: optional<double>
+      taxAmount:
+        docs: The tax amount that was actually applied.
+        type: optional<double>
+      type:
+        docs: |
+          The type of the tax rate. Default is `PERCENT`.
+          The value `EXTERNAL` indicates that the tax is for a marketplace
+          facilitator order, and that the marketplace facilitator
+          organization calculated the tax amount.
+        type: optional<TaxRateType>
+      facilitatorCollectAndRemitTax:
+        docs: |
+          Indicates whether the marketplace facilitator that
+          received a guest order remitted the tax amount on behalf
+          of the Toast platform restaurant.
+          You can use this information to identify tax amounts that
+          have already been paid by an ordering service provider
+          and do not need to be paid again.
+          * `true` - The marketplace facilitator paid the tax
+          amount on behalf of the Toast platform restaurant
+          location.
+          * `false` - The marketplace facilitator has not paid the
+          tax amount. The Toast platform restaurant location may be
+          required to pay the tax amount.
+          **Note**: Toast API response data is not guidance or
+          advice for tax compliance.
+        type: optional<boolean>
+
+  TaxRateType:
+    docs: |
+      The type of the tax rate. Default is `PERCENT`.
+      The value `EXTERNAL` indicates that the tax is for a marketplace
+      facilitator order, and that the marketplace facilitator
+      organization calculated the tax amount.
+    enum:
+      - PERCENT
+      - FIXED
+      - NONE
+      - TABLE
+      - EXTERNAL
+
+  Customer:
+    extends:
+      - ToastReference
+    properties:
+      firstName:
+        docs: |
+          The first name, or given name, of the guest.
+        type: string
+      lastName:
+        docs: |
+          The last name, or surname, of the guest.
+        type: string
+      phone:
+        docs: |
+          The telephone number of the guest.
+        type: string
+      phoneToken:
+        docs: |
+          For internal use only.
+        type: optional<string>
+      email:
+        docs: >
+          The email address corresponding to the guest who placed the order.
+          The email address is the key that identifies a unique restaurant
+          guest. All distinct guests should have distinct email addresses.
+        type: string
+      emailToken:
+        docs: |
+          For internal use only.
+        type: optional<string>
+
+  AppliedLoyaltyInfo:
+    docs: >-
+      Information about the customer loyalty program account associated with a
+      check.
+    extends:
+      - ToastReference
+    properties:
+      loyaltyIdentifier:
+        docs: >-
+          An identifier for the loyalty program account. For `POST` orders, this
+          identifier is transmitted to the loyalty program service provider to
+          associate the check with the loyalty account.
+        type: optional<string>
+      maskedLoyaltyIdentifier:
+        docs: |
+          A representation of the identifier of the loyalty program
+          account that can be displayed securely. For example:
+          `************1234`. The Toast POS displays this string to
+          restaurant employees and guests.
+          You can optionally include this
+          value when you `POST` an order. It is
+          available in response data when you `GET` the order.
+          If you do not provide a `maskedLoyaltyIdentifier` when you
+          `POST` an order, this value is `null` in response data.
+          The Toast POS app displays a masked representation of the
+          `loyaltyIdentifier`. All characters except the last four
+          are hidden.
+        type: optional<string>
+      vendor:
+        docs: >-
+          The specific loyalty program service provider that supports the
+          loyalty account.
+        type: optional<VendorType>
+      accrualFamilyGuid:
+        docs: |
+          Response only. An internal Toast platform identifier for loyalty
+          program transactions.
+          This is not returned from the initial
+          `POST` order request and is available at a later time.
+        type: optional<string>
+      accrualText:
+        docs: |
+          Response only. A description of the loyalty program transaction
+          to print on the customer's receipt. For example,
+          "Earned 27 points."
+          The maximum length of the description string
+          is 255 characters.
+          This is not returned from the initial
+          `POST` order request and is available at a later time.
+        type: optional<string>
+
+  AppliedServiceCharge:
+    docs: >
+      A service charge that is added to a check. A service charge can represent
+      an upcharge such as a gratuity or a delivery fee.
+      Whether the upcharge is taxable is defined in the restaurant-configured
+      `serviceCharge`.
+      The fields on the `AppliedServiceCharge` are calculated based on the
+      referenced `ServiceCharge` configuration.
+    extends:
+      - ExternalReference
+    properties:
+      chargeAmount:
+        docs: >-
+          The final applied amount excluding tax. Required if `chargeType` is
+          `OPEN`.
+        type: optional<double>
+      serviceCharge: ExternalReference
+      chargeType:
+        docs: >
+          The type of service charge. Response only.
+          Valid values:
+          * `FIXED` - The service charge is for a specific currency amount.
+          * `PERCENT` - The service charge is for a percentage of the check
+          amount.
+          * `OPEN` - The service charge is not configured with an amount. The
+          amount is specified by the restaurant employee.
+        type: optional<ServiceChargeType>
+      name:
+        docs: >-
+          The configured human readable label for the service charge. Response
+          only.
+        type: optional<string>
+      delivery:
+        docs: Whether this service charge is a delivery charge. Response only.
+        type: optional<boolean>
+      takeout:
+        docs: Whether this service charge is a takeout charge. Response only.
+        type: optional<boolean>
+      dineIn:
+        docs: Whether this service charge is a dine-in charge. Response only.
+        type: optional<boolean>
+      gratuity:
+        docs: >-
+          Whether this service charge is a gratuity. Can be used to derive
+          required tip amount on the check. Response only.
+        type: optional<boolean>
+      taxable:
+        docs: Whether this service charge is taxable. Response only.
+        type: optional<boolean>
+      appliedTaxes:
+        docs: Taxes applied to the service charge.
+        type: optional<list<AppliedTaxRate>>
+      tags:
+        docs: For internal use only.
+        type: optional<list<string>>
+      serviceChargeCalculation:
+        docs: >
+          Defines whether a `PERCENT` service charge is applied before
+          (`PRE_DISCOUNT`) or after (`POST_DISCOUNT`) discounts.
+          This field is `null` for `FIXED` and `OPEN` service charges.
+        type: optional<ServiceChargeCalculation>
+      refundDetails: optional<RefundDetails>
+
+  ServiceChargeType:
+    docs: >
+      The type of service charge. Response only.
+      Valid values:
+      * `FIXED` - The service charge is for a specific currency amount.
+      * `PERCENT` - The service charge is for a percentage of the check amount.
+      * `OPEN` - The service charge is not configured with an amount. The amount
+      is specified by the restaurant employee.
+    enum:
+      - FIXED
+      - PERCENT
+      - OPEN
+
+  ServiceChargeCalculation:
+    docs: >
+      Defines whether a `PERCENT` service charge is applied before
+      (`PRE_DISCOUNT`) or after (`POST_DISCOUNT`) discounts.
+      This field is `null` for `FIXED` and `OPEN` service charges.
+    enum:
+      - PRE_DISCOUNT
+      - POST_DISCOUNT
+
+  AppliedPreauthInfo:
+    docs: For internal use only.
+    properties:
+      guid:
+        docs: For internal use only.
+        type: optional<string>
+      token:
+        docs: For internal use only.
+        type: string
+      oneTimeUse:
+        docs: For internal use only.
+        type: optional<boolean>
+      preAuthAmount:
+        docs: For internal use only.
+        type: double
+      cardType:
+        docs: For internal use only.
+        type: CardType
+      readerType:
+        docs: For internal use only.
+        type: optional<ReaderType>
+      last4CardDigits:
+        docs: For internal use only.
+        type: string
+      cardHolderFirstName:
+        docs: For internal use only.
+        type: optional<string>
+      cardHolderLastName:
+        docs: For internal use only.
+        type: optional<string>
+      cardHolderhash4:
+        docs: For internal use only.
+        type: optional<string>
+      cardHolderhash6:
+        docs: For internal use only.
+        type: optional<string>
+      magStripeName:
+        docs: For internal use only.
+        type: optional<string>
+      cardHolderExpirationMonth:
+        docs: For internal use only.
+        type: optional<string>
+      cardHolderExpirationYear:
+        docs: For internal use only.
+        type: optional<string>
+      useCount:
+        docs: For internal use only.
+        type: optional<integer>
+
+  CardType:
+    docs: For internal use only.
+    enum:
+      - VISA
+      - MASTERCARD
+      - AMEX
+      - DISCOVER
+      - JCB
+      - DINERS
+      - CITI
+      - MAESTRO
+      - LASER
+      - SOLO
+      - INTERAC
+      - UNKNOWN
+
+  ReaderType:
+    docs: For internal use only.
+    enum:
+      - ACS_ACR31
+      - BBPOS
+      - BBPOS_MSR
+      - IDTECH_SHUTTLE
+      - INGENICO_ICM122
+      - MAGTEK_BULLET
+      - MAGTEK_DYNAMAG
+      - MAGTEK_EDYNAMO
+      - MAGTEK_UDYNAMO
+
+  RemovedSelection:
+    docs: |
+      For internal use only.
+    extends:
+      - ToastReference
+    properties:
+      price:
+        docs: For internal use only.
+        type: optional<double>
+      quantity:
+        docs: For internal use only.
+        type: optional<double>
+
+  DeliveryInfo:
+    docs: >-
+      Information related to delivery orders. Required if the dining option
+      behavior is `DELIVERY`.
+    properties:
+      address1:
+        docs: |
+          The first line of the street address of the delivery destination.
+        type: string
+      address2:
+        docs: |
+          The second line of the street address of the delivery destination.
+        type: optional<string>
+      city:
+        docs: |
+          The name of the city or town of the delivery destination.
+        type: string
+      state:
+        docs: |
+          The postal abbreviation of the state or province of the
+          delivery destination.
+          The abbreviation must be in ISO 3166-2
+          format (two capital letters).
+        type: string
+      zipCode:
+        docs: |
+          The postal or zip code of the delivery destination.
+        type: string
+      latitude:
+        docs: |
+          The north/south geographic coordinate of the delivery
+          destination, in decimal format.
+        type: optional<double>
+      longitude:
+        docs: |
+          The east/west geographic coordinate of the delivery
+          destination, in decimal format.
+        type: optional<double>
+      notes:
+        docs: |
+          Additional instructions or information about the delivery.
+        type: optional<string>
+      deliveredDate:
+        docs: >
+          The date and time that the delivery employee indicated in the Toast
+          POS app that
+          the order was delivered. Response only.
+          This value is only set when the dining option for the order is
+          `DELIVERY`. For other dining options, the value is `null`.
+        type: optional<string>
+      dispatchedDate:
+        docs: >
+          The date and time that the restaurant indicated in the Toast POS app
+          that the
+          order was available for delivery and assigned to a delivery
+          employee.
+          This value is only set when the
+          dining option for the order is `DELIVERY`. For other dining
+          options, the value is `null`.
+        type: optional<string>
+      deliveryEmployee: optional<ExternalReference>
+      deliveryState:
+        docs: >
+          An internal representation of the state of a delivery order.
+          Valid values:
+          * `PENDING` - The delivery is not dispatched. This corresponds to the
+          **Unassigned** tab of
+          the Delivery screen of the Toast POS app.
+          * `IN_PROGRESS` - The order is on the way to the destination. This
+          corresponds to 
+          the **En Route** tab of the Delivery screen of the Toast POS app.
+          * `PICKED_UP` - The employee who delivers the order has picked up the
+          order from the
+          restaurant.
+          * `DELIVERED` - The order was delivered. This corresponds to the
+          **Delivered** tab of the
+          Delivery screen of the Toast POS app.
+        type: optional<DeliveryState>
+
+  DeliveryState:
+    docs: >
+      An internal representation of the state of a delivery order.
+      Valid values:
+      * `PENDING` - The delivery is not dispatched. This corresponds to the
+      **Unassigned** tab of
+      the Delivery screen of the Toast POS app.
+      * `IN_PROGRESS` - The order is on the way to the destination. This
+      corresponds to 
+      the **En Route** tab of the Delivery screen of the Toast POS app.
+      * `PICKED_UP` - The employee who delivers the order has picked up the
+      order from the
+      restaurant.
+      * `DELIVERED` - The order was delivered. This corresponds to the
+      **Delivered** tab of the
+      Delivery screen of the Toast POS app.
+    enum:
+      - PENDING
+      - IN_PROGRESS
+      - PICKED_UP
+      - DELIVERED
+
+  CurbsidePickupInfo:
+    docs: >
+      Information that the restaurant can use to identify a guest when they
+      arrive
+      outside the restaurant to pick up their order. `transportDescription` is a
+      required field.
+    extends:
+      - ToastReference
+    properties:
+      transportColor:
+        docs: >
+          The color of the guest's vehicle if they will arrive at the restaurant
+          in a vehicle to pick up their order.
+        type: optional<string>
+      transportDescription:
+        docs: >
+          Information about how the guest will arrive at the restaurant to pick
+          up their order.
+          For example, the make and model of the vehicle the guest will arrive
+          in.
+        type: optional<string>
+      notes:
+        docs: |
+          Extra notes.
+        type: optional<string>
+
+  DeliveryServiceInfo:
+    docs: |
+      Reserved for future use.
+    extends:
+      - ToastReference
+    properties:
+      providerId:
+        docs: |
+          Reserved for future use.
+        type: optional<string>
+      providerName:
+        docs: |
+          Reserved for future use.
+        type: optional<string>
+      driverName:
+        docs: |
+          Reserved for future use.
+        type: optional<string>
+      driverPhoneNumber:
+        docs: |
+          Reserved for future use.
+        type: optional<string>
+      providerInfo:
+        docs: |
+          Reserved for future use.
+        type: optional<string>
+
+  MarketplaceFacilitatorTaxInfo:
+    docs: |
+      Information about the taxes that a marketplace facilitator
+      organization remits on behalf of a Toast platform restaurant.
+      `POST` only. The orders API does not include the
+      `MarketplaceFacilitatorTaxInfo` object in response data.
+      **Note**: you can only include this information if your
+      Toast API client is associated with a designated
+      marketplace facilitator organization. Most Toast API
+      clients do not create marketplace facilitator orders.
+    properties:
+      facilitatorCollectAndRemitTaxOrder:
+        docs: |
+          Indicates whether a marketplace facilitator organization has
+          paid the tax amounts for an order on behalf of the restaurant
+          that fulfills the order.
+          If you include this value, you indicate that the marketplace
+          facilitator order uses the prices and tax amounts calculated
+          by the Toast platform.
+          If you include this value, you *must not* include the `taxes`
+          value and you *must not* include the `externalPriceAmount`
+          for menu item selections in the order.
+        type: optional<boolean>
+      taxes:
+        docs: |
+          An array of `AppliedTaxRate` objects that describe the tax
+          amounts that apply to a marketplace facilitator order.
+          If you include this value, you must include an `externalPriceAmount`
+          for each menu item selection in the order.
+        type: optional<list<AppliedTaxRate>>

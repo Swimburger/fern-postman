@@ -1,0 +1,115 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /preModifiers
+  endpoints:
+    get:
+      path: /{guid}
+      method: GET
+      docs: |
+        Returns a `PreModifier` object
+        containing information about a pre modifier.
+      display-name: |
+        Get a pre modifier
+      path-parameters:
+        guid:
+          docs: The Toast POS GUID of the pre modifier.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          pre-modifier
+          -request
+      response: PreModifier
+    getAll:
+      path: ""
+      method: GET
+      docs: |
+        Returns an array of `PreModifier` objects
+        containing information about PreModifiers configured
+        for a restaurant.
+      display-name: |
+        Get pre-modifiers
+      request:
+        query-parameters:
+          pageToken:
+            docs: >
+              A string that identifies the set of data objects that the  endpoint will
+              return in its response data. You can use this  parameter to
+              retrieve one page of response data. You  get the value that you
+              supply in the `pageToken` parameter  from the
+              `Toast-Next-Page-Token` header field value of a  previous request
+              to the endpoint. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<string>
+          pageSize:
+            docs: >
+              The number of objects to return in the array. Deprecated. For more
+              information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          page:
+            docs: >
+              The sequence number of the first object to return in the array.
+              Deprecated. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          lastModified:
+            docs: |
+              Limits the return data to objects created or modified after
+              a specific date and time. For example:
+              `2015-12-01T00:00:00.000+0000`.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          pre-modifiers
+          -request
+      response: list<PreModifier>
+types:
+  PreModifier:
+    extends:
+      - commons.ToastReference
+    properties:
+      name:
+        docs: The name of the pre modifier that appears in the Toast POS.
+        type: optional<string>
+      scalePrice:
+        docs: True if this multiplies the modifier price, false if it adds to the
+          modifier price.
+        type: optional<boolean>
+      basePrice:
+        docs: Amount to add to the modifier price, if scalePrice is false. Otherwise not
+          used.
+        type: optional<double>
+      scaleFactor:
+        docs: Amount to multiply the modifier price, if scalePrice is true. Otherwise
+          not used.
+        type: optional<double>
+      displayMode:
+        docs: >
+          Where this premodifier should be displayed relative to the modifier name.
+          PREFIX - before the modifier name SUFFIX - after the modifier name
+        type: optional<PreModifierPlacement>
+      parent: optional<commons.ToastReference>
+  PreModifierPlacement:
+    docs: |
+      Where this premodifier should be displayed relative to the modifier name.
+      PREFIX - before the modifier name
+      SUFFIX - after the modifier name
+    enum:
+      - PREFIX
+      - SUFFIX

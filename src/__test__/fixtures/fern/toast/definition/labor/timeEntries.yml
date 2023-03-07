@@ -1,0 +1,301 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /timeEntries
+  endpoints:
+    getAll:
+      path: ""
+      method: GET
+      docs: |
+        Returns an array of `TimeEntry` objects that contain 
+        information about employee shift events. The information 
+        includes shift start times, end times, and the start and end 
+        times of break periods.
+        *  Include one or more `timeEntryId` query parameters set to 
+           the GUIDs for specific time entries.
+        *  Include both a `startDate` and an `endDate` query parameter 
+           to get time entries for a specific time period.
+        *  Include both a `modifiedStartDate` and a `modifiedEndDate` 
+           query parameter to get the time entries that were modified 
+           during a specific time period.
+        *  Includes a `businessDate` query parameter to get the time 
+           entries with an `inDate` during a specific business date.
+        Valid requests include one or more `timeEntryId` parameters, 
+        both a `startDate` and an `endDate`, both a `modifiedStartDate` 
+        and a `modifiedEndDate`, or a `businessDate`.
+      display-name: Get time entries
+      request:
+        query-parameters:
+          startDate:
+            docs: |
+              Optional start date and time of time period to match time 
+              entries. A time entry matches the time period if its 
+              clock-in `inDate` is after (inclusive) the specified 
+              `startDate` and before (exclusive) the `endDate`. The 
+              specified period cannot be longer than one month.
+            type: optional<string>
+          endDate:
+            docs: |
+              Optional end date and time of time period to match time 
+              entries. A time entry matches the time period if its 
+              clock-in `inDate` is after (inclusive) the specified 
+              `startDate` and before (exclusive) the `endDate`. The 
+              specified period cannot be longer than one month.
+            type: optional<string>
+          modifiedStartDate:
+            docs: |
+              Start date and time of the time period to match modified 
+              time entries. A time entry matches the time period if that 
+              entry was modified after (inclusive) the 
+              `modifiedStartDate`. If you include this parameter, you 
+              must also include the `modifiedEndDate` parameter.  The 
+              specified period cannot be longer than one month.
+            type: optional<string>
+          modifiedEndDate:
+            docs: |
+              End date and time of the time period to match modified time 
+              entries. A time entry matches the time period if that entry 
+              was modified before (exclusive) the `modifiedEndDate`. If 
+              you include this parameter, you must also include the 
+              `modifiedStartDate` parameter.  The specified period cannot 
+              be longer than one month.
+            type: optional<string>
+          businessDate:
+            docs: |
+              Optional date to match time entries. A time entry matches 
+              the business date if its clock-in `inDate` is during the 
+              business date. The cutoff from one `businessDate` to the 
+              next is the `closeoutHour` for the restaurant.
+            type: optional<string>
+          includeMissedBreaks:
+            docs: |
+              Optional flag to indicate whether missed breaks should be 
+              returned in the breaks array for the time entries.
+            type: optional<boolean>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast platform GUID of the restaurant that is the 
+              context for this operation.
+            type: string
+        name: get-time-entries-request
+      response: list<TimeEntry>
+    get:
+      path: /{timeEntryId}
+      method: GET
+      docs: |
+        Returns a `TimeEntry` object containing information about one 
+        employee shift. The information includes the shift start time, 
+        end time, and the start and end times of break periods.
+      display-name: Get one time entry
+      path-parameters:
+        timeEntryId:
+          docs: |
+            The Toast platform GUID or an external identifier for the 
+            time entry.
+          type: string
+      request:
+        query-parameters:
+          includeMissedBreaks:
+            docs: |
+              Optional flag to indicate whether missed breaks should be 
+              returned in the breaks array for the time entries.
+            type: optional<boolean>
+          includeArchived:
+            docs: |
+              Controls whether the response includes an archived time entry.
+              Optional.
+            type: optional<boolean>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast platform GUID of the restaurant that is the 
+              context for this operation.
+            type: string
+        name: get-time-entry-request
+      response: TimeEntry
+types:
+  TimeEntry:
+    docs: |
+      A `TimeEntry` captures the actual time an employee worked or took 
+      a break. Typically, a time entry is one-to-one with a scheduled 
+      shift, but it is possible in the Toast platform for an employee 
+      to clock-in and clock-out without a shift.
+    extends:
+      - commons.ExternalReference
+    properties:
+      createdDate:
+        docs: |
+          Date created, in UTC format (read-only).
+        type: optional<string>
+      modifiedDate:
+        docs: |
+          Date modified, in UTC format (read-only).
+        type: optional<string>
+      deletedDate:
+        docs: |
+          Date deleted, in UTC format (read-only).
+        type: optional<string>
+      deleted:
+        docs: |
+          If the time entry is deleted in the Toast platform.
+        type: optional<boolean>
+      jobReference: optional<commons.ExternalReference>
+      employeeReference: optional<commons.ExternalReference>
+      shiftReference: optional<commons.ExternalReference>
+      inDate:
+        docs: |
+          The date and time that an employee clocked in to a work
+          shift.
+        type: optional<string>
+      outDate:
+        docs: |
+          The date and time that an employee closed a work shift.
+          If the employee has not closed the shift this field is
+          null.
+        type: optional<string>
+      autoClockedOut:
+        docs: >
+          Indicates whether the Toast platform automatically clocked the employee
+          out of their shift at the end of the restaurant business day. For more
+          information, see [the Toast platform guide section about automatic
+          clock-out and time
+          entries](https://doc.toasttab.com/doc/platformguide/adminEffectOfAutoclockOutOnBreakEntries.html).
+        type: optional<boolean>
+      businessDate:
+        docs: |
+          The business date of `inDate`, in the format of 
+          "yyyymmdd".
+        type: optional<string>
+      regularHours:
+        docs: |
+          Regular hours worked by the employee for this time entry, 
+          excluding breaks.
+        type: optional<double>
+      overtimeHours:
+        docs: |
+          Any overtime hours taken by this employee during this 
+          time entry.
+        type: optional<double>
+      hourlyWage:
+        docs: |
+          Optional, historical `hourlyWage`; that is, the wage in 
+          effect when the time entry was made. The current 
+          `hourlyWage` for the employee (or job) may be different. 
+          This will be null if the job is `SALARY`.
+        type: optional<double>
+      breaks:
+        docs: |
+          An optional array of time entry breaks, each break 
+          defining a clock-in date, clock-out date, and whether or 
+          not the break was paid.
+        type: optional<list<TimeEntryBreak>>
+      declaredCashTips:
+        docs: |
+          The currency amount of tips paid in cash during the time
+          entry. This does not include service charges applied as
+          automatic gratuities. If the employee has not closed the
+          shift, this value is not final and may change. If the
+          `outDate` value is set, the `declaredCashTips` value is
+          final.
+        type: optional<double>
+      nonCashTips:
+        docs: |
+          The currency amount of tips paid using non-cash tender
+          during the time entry. For example, this includes credit
+          card tips. This does not include service charges applied
+          as automatic gratuities. If the employee has not closed
+          the shift, this value is not final and may change. If the
+          `outDate` value is set, the `nonCashTips` value is final.
+        type: optional<double>
+      cashGratuityServiceCharges:
+        docs: |
+          The currency amount of service charges applied as
+          automatic gratuities that were paid in cash during the
+          time entry. If the employee has not closed the shift,
+          this value is not final and may change. If the `outDate`
+          value is set, the `cashGratuityServiceCharges` value is
+          final.
+        type: optional<double>
+      nonCashGratuityServiceCharges:
+        docs: |
+          The currency amount of service charges applied as
+          automatic gratuities that were paid using non-cash tender
+          during the time entry. If the employee has not closed the
+          shift, this value is not final and may change. If the
+          `outDate` value is set, the
+          `nonCashGratuityServiceCharges` value is final.
+        type: optional<double>
+      tipsWithheld:
+        docs: |
+          The currency amount withheld from the employee's credit 
+          card tips during the time entry. The amount withheld is 
+          calculated as a percentage of tips added to credit card 
+          payments. If the employee has not closed the shift (the 
+          `outDate` value is null), the `tipsWithheld` value is not 
+          final and may change. If the employee has closed the 
+          shift (the `outDate` value is set), the `tipsWithheld` 
+          value is final.
+        type: optional<double>
+      nonCashSales:
+        docs: |
+          The currency amount of non-cash sales during the time 
+          entry. The value includes the order amounts and tax.
+          It does not include tips.
+          If the employee has not closed the shift, this 
+          value is `0`. If the `outDate` value is set, then the 
+          `nonCashSales` value is final.
+        type: optional<double>
+      cashSales:
+        docs: |
+          The currency amount of sales paid for in cash during the 
+          time entry. The value includes the order amounts and tax.
+          It does not include tips.
+          If the employee has not closed the shift, 
+          this value is `0`. If the `outDate` value is set, 
+          then the `cashSales` value is final.
+        type: optional<double>
+  TimeEntryBreak:
+    docs: |
+      Information about a period of time that an employee is not
+      working during a shift. For example, an employee might take a
+      break to eat at some time during a shift. An employee can be paid
+      or unpaid for the break period.
+    properties:
+      guid:
+        docs: |
+          The GUID maintained by the Toast platform.
+        type: optional<string>
+      breakType: optional<commons.ToastReference>
+      paid:
+        docs: |
+          Indicates whether the employee was paid for the break.
+          * `true` - The break was a paid break.
+          * `false` - The break was an unpaid break.
+        type: optional<boolean>
+      inDate:
+        docs: |
+          The date and time that the employee started the break period,
+          in UTC.
+        type: optional<string>
+      outDate:
+        docs: |
+          The date and time that the employee ended the break period
+          and returned to work, in UTC.
+        type: optional<string>
+      missed:
+        docs: |
+          Indicates whether the break was a missed break.
+          * `true` - The break was missed.
+          * `false` - The break was taken.
+        type: optional<boolean>
+      auditResponse:
+        docs: |
+          Indicates whether the employee was asked to take the break.
+          * `true` - The employee was asked to take the break.
+          * `false` - The employee was not asked to take the break.
+          Null for break types that do not use break acknowledgement 
+          tracking or when the employee did not complete the audit 
+          response prompt.
+        type: optional<boolean>

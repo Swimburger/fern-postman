@@ -1,0 +1,19 @@
+groups:
+  publish:
+    generators:
+      - name: fernapi/fern-typescript-sdk
+        version: 0.2.2
+        output:
+          location: npm
+          package-name: '@fern-api/toast'
+          token: ${FERN_NPM_TOKEN}
+        github:
+          repository: fern-hotschedules/toast-node
+      - name: fernapi/fern-postman
+        version: 0.0.39
+        output:
+          location: postman
+          api-key: ${FERN_POSTMAN_API_KEY}
+          workspace-id: ${FERN_POSTMAN_WORKSPACE_ID}
+        github:
+          repository: fern-hotschedules/toast-postman

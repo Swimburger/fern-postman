@@ -1,0 +1,97 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /restaurantServices
+  endpoints:
+    get:
+      path: /{guid}
+      method: GET
+      docs: |
+        Returns a `RestaurantService`
+        object containing information about a type of menu and dining
+        offered by a restaurant. For example, a restaurant might offer
+        a lunch service at some hours of the day and a dinner service
+        at other hours of the day.
+      display-name: |
+        Get a restaurant service period
+      path-parameters:
+        guid:
+          docs: The Toast POS GUID of the service.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          restaurant-service-period
+          -request
+      response: RestaurantService
+    getAll:
+      path: ""
+      method: GET
+      docs: >
+        Returns an array of `RestaurantService` objects containing information
+        about the types of menu and dining offered by a restaurant. For example,
+        a restaurant might offer a lunch service at some hours of the day and a
+        dinner service at other hours of the day. If a `lastModified` date is
+        specified, returns all objects that were created or modified after that
+        date.
+      display-name: |
+        Get restaurant service periods
+      request:
+        query-parameters:
+          pageToken:
+            docs: >
+              A string that identifies the set of data objects that the  endpoint will
+              return in its response data. You can use this  parameter to
+              retrieve one page of response data. You  get the value that you
+              supply in the `pageToken` parameter  from the
+              `Toast-Next-Page-Token` header field value of a  previous request
+              to the endpoint. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<string>
+          pageSize:
+            docs: >
+              The number of objects to return in the array. Deprecated. For more
+              information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          page:
+            docs: >
+              The sequence number of the first object to return in the array.
+              Deprecated. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          lastModified:
+            docs: |
+              Limits the return data to objects created or modified after
+              a specific date and time. For example:
+              `2015-12-01T00:00:00.000+0000`.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          restaurant-service-periods
+          -request
+      response: list<RestaurantService>
+types:
+  RestaurantService:
+    extends:
+      - commons.ToastReference
+    properties:
+      name:
+        docs: |
+          The name of this meal service (for example, `Lunch` or
+          `Dinner`).
+        type: optional<string>

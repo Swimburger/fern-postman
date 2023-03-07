@@ -1,0 +1,131 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /breakTypes
+  endpoints:
+    get:
+      path: /{guid}
+      method: GET
+      docs: |
+        Returns a `BreakType`
+        object containing information about a break type configured for 
+        a restaurant.
+      display-name: |
+        Get a break type
+      path-parameters:
+        guid:
+          docs: The Toast POS GUID of the break config.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: >
+              The Toast POS GUID of the restaurant that the break is configured for.
+            type: string
+        name: |-
+          break-type
+          -request
+      response: BreakType
+    getAll:
+      path: ""
+      method: GET
+      docs: |
+        Returns an array of `BreakType`
+        objects containing information about breaks configured for a
+        restaurant. If a `lastModified` date is specified, returns
+        all objects that were created or modified after that date.
+      display-name: |
+        Get break types
+      request:
+        query-parameters:
+          pageToken:
+            docs: >
+              A string that identifies the set of data objects that the  endpoint will
+              return in its response data. You can use this  parameter to
+              retrieve one page of response data. You  get the value that you
+              supply in the `pageToken` parameter  from the
+              `Toast-Next-Page-Token` header field value of a  previous request
+              to the endpoint. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<string>
+          pageSize:
+            docs: >
+              The number of objects to return in the array. Deprecated. For more
+              information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          page:
+            docs: >
+              The sequence number of the first object to return in the array.
+              Deprecated. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          lastModified:
+            docs: |
+              Limits the return data to objects created or modified after
+              a specific date and time. For example:
+              `2015-12-01T00:00:00.000+0000`.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          break-types
+          -request
+      response: list<BreakType>
+types:
+  BreakType:
+    extends:
+      - commons.ToastReference
+    properties:
+      name:
+        docs: |
+          The name of the work break type, as recognized by
+          restaurant employees.
+        type: optional<string>
+      active:
+        docs: |
+          Indicates whether the break is available and can be taken
+          by restaurant employees.
+        type: optional<boolean>
+      paid:
+        docs: Indicates whether the break is paid.
+        type: optional<boolean>
+      duration:
+        docs: The duration of the break in minutes.
+        type: optional<integer>
+      enforceMinimumTime:
+        docs: |
+          Indicates whether the duration is enforced as the minimum
+          time for the break.
+        type: optional<boolean>
+      trackMissedBreaks:
+        docs: |
+          True if breaks that are not taken within the specified break
+          interval should be generated in Toast.
+        type: optional<boolean>
+      breakIntervalHrs:
+        docs: |
+          The number of hours between break intervals. Break intervals
+          are specified in hours and minutes. If missed breaks are not
+          tracked, this value may be null.
+        type: optional<integer>
+      breakIntervalMins:
+        docs: |
+          The number of minutes between break intervals. Break intervals
+          are specified in hours and minutes. If missed breaks are not
+          tracked, this value may be null.
+        type: optional<integer>
+      trackBreakAcknowledgement:
+        docs: |
+          Indicates whether break acknowledgements are collected for
+          this type of break. Break acknowledgements will not be
+          collected if `trackMissedBreaks` is false.
+        type: optional<boolean>

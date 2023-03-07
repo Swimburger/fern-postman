@@ -1,0 +1,106 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /menuOptionGroups
+  endpoints:
+    get:
+      path: /{guid}
+      method: GET
+      docs: |
+        Returns a `MenuOptionGroup`
+        object containing information about a modifier group. For
+        example, salad dressings might be a modifier group for a
+        salad menu item.
+      display-name: |
+        Get a modifier group
+      path-parameters:
+        guid:
+          docs: The Toast POS GUID of the modifier group.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          modifier-group
+          -request
+      response: MenuOptionGroup
+    getAll:
+      path: ""
+      method: GET
+      docs: |
+        Returns an array of `MenuOptionGroup`
+        objects containing information about modifier groups. 
+        For example, salad dressings might be a modifier group
+        for a salad menu item. If a `lastModified` date is
+        specified, returns all objects that were created or modified
+        after that date.
+      display-name: |
+        Get modifier groups
+      request:
+        query-parameters:
+          pageToken:
+            docs: >
+              A string that identifies the set of data objects that the  endpoint will
+              return in its response data. You can use this  parameter to
+              retrieve one page of response data. You  get the value that you
+              supply in the `pageToken` parameter  from the
+              `Toast-Next-Page-Token` header field value of a  previous request
+              to the endpoint. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<string>
+          pageSize:
+            docs: >
+              The number of objects to return in the array. Deprecated. For more
+              information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          page:
+            docs: >
+              The sequence number of the first object to return in the array.
+              Deprecated. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          lastModified:
+            docs: |
+              Limits the return data to objects created or modified after
+              a specific date and time. For example:
+              `2015-12-01T00:00:00.000+0000`.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          modifier-groups
+          -request
+      response: list<MenuOptionGroup>
+types:
+  MenuOptionGroup:
+    extends:
+      - commons.ExternalReference
+    properties:
+      name:
+        docs: The name of the `MenuOptionGroup` as it appears in the Toast POS.
+        type: optional<string>
+      options:
+        docs: |
+          An array of `ExternalReference` objects containing the
+          identifiers of the `MenuItem`s in
+          the menu group.
+        type: optional<list<commons.ExternalReference>>
+      minSelections:
+        docs: The minimum number of selections that must be made from this option group.
+        type: optional<double>
+      maxSelections:
+        docs: The maximum number of selections that can be made from this option group.
+        type: optional<double>

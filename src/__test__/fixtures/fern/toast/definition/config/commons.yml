@@ -1,0 +1,188 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+types:
+  ExternalReference:
+    extends:
+      - ToastReference
+    docs: >-
+      A wrapper object with fields that allow reference to a Toast entity by
+      Toast GUID or a partner's identifier.
+    properties:
+      externalId:
+        docs: External identifier string, prefixed by the naming authority.
+        type: optional<string>
+
+  ToastReference:
+    docs: >-
+      A wrapper object with fields that allow reference to a Toast entity by
+      Toast GUID.
+    properties:
+      guid:
+        docs: The GUID maintained by the Toast POS.
+        type: string
+      entityType:
+        docs: The type of object this is.
+        type: string
+
+  Image:
+    docs: Information about an image associated with a menu or menu item.
+    properties:
+      url:
+        docs: The web address of the image.
+        type: optional<string>
+
+  TaxRate:
+    extends:
+      - ToastReference
+    properties:
+      name:
+        docs: The name of this tax rate.
+        type: optional<string>
+      isDefault:
+        docs: True if this tax rate is the default tax rate.
+        type: optional<boolean>
+      rate:
+        docs: >
+          The tax rate value.
+          For a fixed amount tax rate, is the fixed amount of the tax.
+          For a percent tax rate, the percentage is expressed as a decimal
+          value. For example, if the tax rate is 6.25%, then `rate` is 0.0625.
+          If `type` is `NONE`, then `rate` is `null`.
+        type: optional<double>
+      type:
+        docs: The type of the tax rate.
+        type: optional<TaxRateType>
+      roundingType:
+        docs: >
+          The method used to round fractional currency amounts to non-fractional
+          currency amounts.
+          Only applies to `PERCENT` tax rates. For other tax rate types,
+          `roundingType` is `null`.
+          Valid values:
+          * `HALF_UP` - Round values up or down to the nearest number. If the
+          last digit is 5, which is halfway, then always round up to the nearest
+          number.
+          * `HALF_EVEN` - Round values up or down to the nearest number. If the
+          last digit is 5, which is halfway, then round up or down to the
+          nearest even number.
+          * `ALWAYS_UP` - Always round up to the next number.
+          * `ALWAYS_DOWN` - Always round down to the next number.
+          For more details and examples, see <a
+          href="https://doc.toasttab.com/doc/platformguide/adminPercentTaxRates.html#roundingOptions">Rounding
+          options</a>.
+        type: optional<RoundCurrencyMethod>
+      taxTable:
+        docs: >-
+          An array of `TaxTableRow` objects that define a set of tax amounts
+          that apply to specific sale amount ranges.
+        type: optional<list<TaxTableRow>>
+      conditionalTaxRates:
+        docs: |
+          An array of `ConditionalTaxRate`
+          objects that indicate the conditional rates that override
+          the default `rate` for this `TaxRate` in specific
+          situations. For example, a conditional rate might
+          override the default rate when a `TaxRate` is applied for
+          a specific dining option, such as takeout.
+        type: optional<list<ConditionalTaxRate>>
+
+  TaxRateType:
+    docs: The type of the tax rate.
+    enum:
+      - PERCENT
+      - FIXED
+      - TABLE
+      - NONE
+      - EXTERNAL
+
+  RoundCurrencyMethod:
+    docs: >
+      The method used to round fractional currency amounts to non-fractional
+      currency amounts.
+      Only applies to `PERCENT` tax rates. For other tax rate types,
+      `roundingType` is `null`.
+      Valid values:
+      * `HALF_UP` - Round values up or down to the nearest number. If the last
+      digit is 5, which is halfway, then always round up to the nearest number.
+      * `HALF_EVEN` - Round values up or down to the nearest number. If the last
+      digit is 5, which is halfway, then round up or down to the nearest even
+      number.
+      * `ALWAYS_UP` - Always round up to the next number.
+      * `ALWAYS_DOWN` - Always round down to the next number.
+      For more details and examples, see <a
+      href="https://doc.toasttab.com/doc/platformguide/adminPercentTaxRates.html#roundingOptions">Rounding
+      options</a>.
+    enum:
+      - HALF_UP
+      - HALF_EVEN
+      - ALWAYS_UP
+      - ALWAYS_DOWN
+
+  TaxTableRow:
+    docs: >-
+      A closed sale amount range that corresponds to a specific tax amount in a
+      tax table.
+    properties:
+      start:
+        docs: >-
+          The start of a sale amount range that corresponds to a specific tax
+          amount in a tax table.
+        type: optional<double>
+      end:
+        docs: >-
+          The end of a sale amount range that corresponds to a specific tax
+          amount in a tax table.
+        type: optional<double>
+      tax:
+        docs: The tax amount for the tax table row.
+        type: optional<double>
+      pattern:
+        docs: >-
+          Specifies whether the price range is part of an incomplete set of
+          ranges that establish an algorithm that you can use to calculate tax
+          amounts.
+        type: optional<boolean>
+
+  ConditionalTaxRate:
+    docs: |
+      A conditional tax rate that overrides the default `rate`
+      for a `TaxRate` in
+      specific situations. For example, a conditional rate
+      might override the default rate when a `TaxRate` is
+      applied for a specific dining option, such as takeout.
+    properties:
+      condition:
+        docs: A string describing the condition for the tax rate
+        type: optional<string>
+      rate:
+        docs: The percentage rate of the conditional tax rate
+        type: optional<double>
+  MenuDisplay:
+    docs: >
+      Deprecated. Indicates where the menu is displayed and who can see it. *
+      ALL: Visible to everyone (servers and customers) * POS_ONLY: Only visible
+      to servers * NONE: Hidden from everyone Toast is streamlining and
+      improving the set of configuration options that restaurants use for
+      configuring where a menu entity is visible (for example, on a Toast POS
+      device or on a restaurant's Toast online ordering website). As part of
+      this change, the `visibility` value in the configuration API has been
+      deprecated. Before 2020-05-25, you should transition to using the
+      `visibility` array that the menus API returns for each menu entity,
+      instead of this `visibility` value, to determine where the entity should
+      be visible. See <a
+      href="https://doc.toasttab.com/doc/devguide/apiDeprecatedApiFunctions.html#apiMenuEntityVisibilityEnhancements">Menu
+      entity visibility enhancements (rolled out)</a> for more information.
+    enum:
+      - ALL
+      - POS_ONLY
+      - NONE
+  PriceUnit:
+    docs: >
+      The unit of measure used to determine the price of items in this menu. For
+      example, $10.00 per gram.
+    enum:
+      - NONE
+      - LB
+      - OZ
+      - KG
+      - G

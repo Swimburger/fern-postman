@@ -1,0 +1,32 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+types:
+  ExternalReference:
+    docs: |
+      A wrapper object with fields that allow reference to a Toast 
+      platform entity by Toast GUID or an external identifier.
+    extends:
+      - ToastReference
+    properties:
+      externalId:
+        docs: |
+          External identifier string that is prefixed by the naming 
+          authority. You can, for example, use the labor API to 
+          `POST` an `externalId` for an employee and then `GET` the 
+          employee with that `externalId`.
+        type: optional<string>
+
+  ToastReference:
+    docs: |
+      A wrapper object with fields that allow reference to a Toast 
+      platform entity by Toast GUID.
+    properties:
+      guid:
+        docs: |
+          The GUID maintained by the Toast platform.
+        type: string
+      entityType:
+        docs: |
+          The type of object this is.
+        type: string
+

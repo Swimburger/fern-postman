@@ -1,0 +1,138 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /menus
+  endpoints:
+    get:
+      path: /{guid}
+      method: GET
+      docs: |
+        Returns a `Menu` object
+        containing information about a menu configured for a
+        restaurant. For example, a restaurant might have drinks,
+        dinner, and dessert menus.
+      display-name: |
+        Get a menu
+      path-parameters:
+        guid:
+          docs: The Toast POS GUID of the menu.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          menu
+          -request
+      response: Menu
+    getAll:
+      path: ""
+      method: GET
+      docs: |
+        Returns an array of `Menu`
+        objects containing information about menus configured for a
+        restaurant. For example, a restaurant might have drinks,
+        dinner, and dessert menus. If a `lastModified` date is
+        specified, returns all objects that were created or modified
+        after that date.
+      display-name: |
+        Get menus
+      request:
+        query-parameters:
+          pageToken:
+            docs: >
+              A string that identifies the set of data objects that the  endpoint will
+              return in its response data. You can use this  parameter to
+              retrieve one page of response data. You  get the value that you
+              supply in the `pageToken` parameter  from the
+              `Toast-Next-Page-Token` header field value of a  previous request
+              to the endpoint. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<string>
+          pageSize:
+            docs: >
+              The number of objects to return in the array. Deprecated. For more
+              information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          page:
+            docs: >
+              The sequence number of the first object to return in the array.
+              Deprecated. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          lastModified:
+            docs: |
+              Limits the return data to objects created or modified after
+              a specific date and time. For example:
+              `2015-12-01T00:00:00.000+0000`.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          menus
+          -request
+      response: list<Menu>
+types:
+  Menu:
+    extends:
+      - commons.ExternalReference
+    properties:
+      name:
+        docs: |
+          The name of the menu as it appears in the Toast POS.
+        type: optional<string>
+      orderableOnline:
+        docs: >
+          Deprecated. Indicates whether restaurant guests can order from the menu
+          online. Toast is streamlining and improving the set of configuration
+          options that restaurants use for configuring whether a menu entity can
+          be ordered online. As part of this change, the `orderableOnline` value
+          has been deprecated. Before 2020-05-25, you should transition to using
+          the `visibility` array that the menus API returns for each menu
+          entity, instead of this `orderableOnline` value, to determine if the
+          entity should be available for online ordering. See <a
+          href="https://doc.toasttab.com/doc/devguide/apiDeprecatedApiFunctions.html#apiMenuEntityVisibilityEnhancements">Menu
+          entity visibility enhancements (rolled out)</a> for more information.
+        type: optional<string>
+      visibility:
+        docs: >
+          Deprecated. Indicates where the menu is displayed and who can see it. *
+          ALL: Visible to everyone (servers and customers) * POS_ONLY: Only
+          visible to servers * NONE: Hidden from everyone Toast is streamlining
+          and improving the set of configuration options that restaurants use
+          for configuring where a menu entity is visible (for example, on a
+          Toast POS device or on a restaurant's Toast online ordering website).
+          As part of this change, the `visibility` value in the configuration
+          API has been deprecated. Before 2020-05-25, you should transition to
+          using the `visibility` array that the menus API returns for each menu
+          entity, instead of this `visibility` value, to determine where the
+          entity should be visible. See <a
+          href="https://doc.toasttab.com/doc/devguide/apiDeprecatedApiFunctions.html#apiMenuEntityVisibilityEnhancements">Menu
+          entity visibility enhancements (rolled out)</a> for more information.
+        type: optional<commons.MenuDisplay>
+      groups:
+        docs: |
+          An array of the `MenuGroup` objects
+          that are part of this menu.
+        type: optional<list<commons.ExternalReference>>
+      images:
+        docs: A collection of images associated with the menu.
+        type: optional<list<commons.Image>>
+      unitOfMeasure:
+        docs: >
+          The unit of measure used to determine the price of items in this menu. For
+          example, $10.00 per gram.
+        type: optional<commons.PriceUnit>
+  

@@ -1,0 +1,168 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /jobs
+  endpoints:
+    getAll:
+      path: ""
+      method: GET
+      docs: |
+        Returns an array of `Job` objects containing information about 
+        the employee jobs configured at a restaurant.
+      display-name: Get jobs
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast platform GUID of the restaurant that is the 
+              context for this operation.
+            type: string
+        name: jobs-request
+      response: list<Job>
+    get:
+      path: /{jobId}
+      method: GET
+      docs: |
+        Returns a `Job` object containing information about one 
+        employee job at a restaurant.
+      display-name: Get one job
+      path-parameters:
+        jobId:
+          docs: |
+            The Toast platform GUID or an external identifier for the 
+            job.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast platform GUID of the restaurant that is the 
+              context for this operation.
+            type: string
+        name: job-request
+      response: Job
+    updateJobExternalID:
+      path: /{jobId}/externalId
+      method: PUT
+      docs: |
+        Adds or replaces the external identifier for an existing job. 
+        Include the string value of the new external identifier in the 
+        message body.
+        The Toast platform uses this external identifier as one of the 
+        unique, persistent identifiers for a job record. _Changing the 
+        external identifier for an existing job might affect reporting 
+        and other Toast platform functions that select jobs using the 
+        `externalId` value._
+      display-name: Add or replace an external identifier
+      path-parameters:
+        jobId:
+          docs: |
+            The Toast platform GUID or external identifier of the job 
+            record.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast platform GUID of the restaurant that is the 
+              context for this operation.
+            type: string
+          Content-Type:
+            docs: |
+              The Internet Assigned Numbers Authority (IANA) media type 
+              of the message body data. The value must be 
+              `application/json`.
+            type: string
+        body:
+          type: string
+        name: add-or-replace-an-external-identifier-request
+      response: Job
+    createJobExternalID:
+      path: /{jobId}/externalId
+      method: POST
+      docs: |
+        Adds an external identifier for an existing job. Include the 
+        string value of the new external identifier in the message 
+        body.
+        You cannot change an existing external identifier with another 
+        `POST` request. The Toast platform uses this external 
+        identifier as one of the unique, persistent identifiers for a 
+        job record.
+      display-name: Add an external identifier
+      path-parameters:
+        jobId:
+          docs: |
+            The Toast platform GUID or external identifier of the job 
+            record.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast platform GUID of the restaurant that is the 
+              context for this operation.
+            type: string
+          Content-Type:
+            docs: |
+              The Internet Assigned Numbers Authority (IANA) media type 
+              of the message body data. The value must be 
+              `application/json`.
+            type: string
+        body:
+          type: string
+        name: add-external-identifier-request
+      response: Job
+types:
+  Job:
+    docs: A restaurant job.
+    extends:
+      - commons.ExternalReference
+    properties:
+      createdDate:
+        docs: |
+          Date created, in UTC format (read-only).
+        type: optional<string>
+      modifiedDate:
+        docs: |
+          Date modified, in UTC format (read-only).
+        type: optional<string>
+      deletedDate:
+        docs: |
+          Date deleted, in UTC format (read-only).
+        type: optional<string>
+      title:
+        docs: |
+          Title of the job.
+        type: optional<string>
+      deleted:
+        docs: |
+          If the job is deleted in the Toast platform.
+        type: optional<boolean>
+      wageFrequency:
+        docs: |
+          An enumerated type specifying how to interpret the 
+          default wage for this job.
+        type: optional<WageFrequency>
+      defaultWage:
+        docs: |
+          The default wage of the job.
+        type: optional<double>
+      tipped:
+        docs: |
+          Indicates whether the job receives gratuities (tips).
+        type: optional<boolean>
+      code:
+        docs: |
+          A reference identifier for the job. This is an optional 
+          field entered when the job is created. For example, it 
+          can be used to match Toast platform jobs to jobs 
+          configured in external labor management systems.
+        type: optional<string>
+  WageFrequency:
+    docs: |
+      An enumerated type specifying how to interpret the 
+      default wage for this job.
+    enum:
+      - HOURLY
+      - SALARY

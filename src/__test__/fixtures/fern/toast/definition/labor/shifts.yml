@@ -1,0 +1,183 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /shifts
+  endpoints:
+    getAll:
+      path: ""
+      method: GET
+      docs: |
+        Returns an array of `Shift` objects that contain information 
+        about schedule shifts for restaurant employees.
+      display-name: Get shifts
+      request:
+        query-parameters:
+          shiftIds:
+            docs: |
+              An optional identifier that filters return values for a
+              specific shift. The identifier can be a Toast platform GUID
+              or an external identifier. If present, the shifts
+              resource will only return the shifts you specify. You
+              can include multiple `shiftIds` query parameters (maximum
+              100).
+            type: optional<string>
+          startDate:
+            docs: |
+              Optional start date and time of time period to match 
+              shifts. A shift matches the time period if the shift 
+              `inDate` is after (inclusive) the specified `startDate` and 
+              the shift `outDate` is before the `endDate` (exclusive). 
+              These parameters are required if the `shiftIds` parameter 
+              is not defined. The specified period cannot be longer than 
+              one month.
+            type: optional<string>
+          endDate:
+            docs: |
+              Optional end date and time of time period to match shifts. 
+              A shift matches the time period if the shift `inDate` is 
+              after (inclusive) the specified `startDate` and the shift 
+              `outDate` is before the `endDate` (exclusive). These 
+              parameters are required if the `shiftIds` parameter is not 
+              defined. The specified period cannot be longer than one 
+              month.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast platform GUID of the restaurant that is the 
+              context for this operation.
+            type: string
+        name: shifts-request
+      response: list<Shift>
+    create:
+      path: ""
+      method: POST
+      docs: |
+        Creates a schedule shift for a restaurant employee.
+      display-name: Create a shift
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast platform GUID of the restaurant that is the 
+              context for this operation.
+            type: string
+          Content-Type:
+            docs: |
+              The Internet Assigned Numbers Authority (IANA) media type 
+              of the message body data. The value must be 
+              `application/json`.
+            type: string
+        body:
+          type: string
+        name: create-shift-request
+      response: Shift
+    get:
+      path: /{shiftId}
+      method: GET
+      docs: |
+        Returns a `Shift` object containing of information about one 
+        schedule shift for a restaurant employee.
+      display-name: Get a shift
+      path-parameters:
+        shiftId:
+          docs: |
+            The Toast platform GUID or an external identifier for the 
+            shift.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast platform GUID of the restaurant that is the 
+              context for this operation.
+            type: string
+        name: get-shift-request
+      response: Shift
+    update:
+      path: /{shiftId}
+      method: PUT
+      docs: |
+        Updates an existing schedule shift record for a restaurant 
+        employee. A `PUT` request completely replaces the information 
+        in the existing record.
+      display-name: Update a shift
+      path-parameters:
+        shiftId:
+          docs: |
+            The shift identifier, either the Toast platform GUID or an 
+            external identifier.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast platform GUID of the restaurant that is the 
+              context for this operation.
+            type: string
+        body:
+          type: string
+        name: update-shift-request
+      response: Shift
+    delete:
+      path: /{shiftId}
+      method: DELETE
+      docs: |
+        Marks an existing schedule shift record for a restaurant 
+        employee as deleted. If the shift record was already deleted, 
+        then the operation will succeed (HTTP 200 response code) and no 
+        change will be made.
+      display-name: Delete a shift
+      path-parameters:
+        shiftId:
+          docs: |
+            The shift identifier, either the Toast platform GUID or an 
+            external identifier.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast platform GUID of the restaurant that is the 
+              context for this operation.
+            type: string
+        name: a-shift-request
+      response: Shift
+types:
+  Shift:
+    docs: |
+      A scheduled shift in the Toast platform used to enforce employee 
+      clock-in and clock outs. Shifts might be created in an external 
+      scheduling system and pushed to the Toast platform.
+    extends:
+      - commons.ExternalReference
+    properties:
+      createdDate:
+        docs: |
+          Date created, in UTC format (read-only).
+        type: optional<string>
+      modifiedDate:
+        docs: |
+          Date modified, in UTC format (read-only).
+        type: optional<string>
+      deletedDate:
+        docs: |
+          Date deleted, in UTC format (read-only).
+        type: optional<string>
+      deleted:
+        docs: |
+          If the shift is deleted in the Toast platform.
+        type: optional<boolean>
+      jobReference: optional<commons.ExternalReference>
+      employeeReference: optional<commons.ExternalReference>
+      inDate:
+        docs: |
+          Timestamp of the beginning of the shift. This is when the 
+          employee can clock in. Expressed in the UTC time zone.
+        type: optional<string>
+      outDate:
+        docs: |
+          Timestamp of the end of the shift. This is when the 
+          employee can clock out. Expressed in the UTC time zone.
+        type: optional<string>

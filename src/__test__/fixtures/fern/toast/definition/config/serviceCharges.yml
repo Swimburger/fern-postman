@@ -1,0 +1,165 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /serviceCharges
+  endpoints:
+    get:
+      path: /{guid}
+      method: GET
+      docs: |
+        Returns a `ServiceCharge` object
+        containing information about a type of fee applied to
+        restaurant sales. For example, an automatic gratuity applied to
+        the check for a large dining party might be a type of service
+        charge for a restaurant.
+      display-name: |
+        Get a service charge type
+      path-parameters:
+        guid:
+          docs: The Toast POS GUID of the service charge.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          service-charge-type
+          -request
+      response: ServiceCharge
+    getAll:
+      path: ""
+      method: GET
+      docs: |
+        Returns an array of `ServiceCharge` objects
+        containing information about the types of fee applied to
+        restaurant sales. For example, an automatic gratuity applied to
+        the check for a large dining party might be a type of service
+        charge for a restaurant. If a `lastModified` date is specified,
+        returns all objects that were created or modified after that
+        date.
+      display-name: |
+        Get service charges
+      request:
+        query-parameters:
+          pageToken:
+            docs: >
+              A string that identifies the set of data objects that the  endpoint will
+              return in its response data. You can use this  parameter to
+              retrieve one page of response data. You  get the value that you
+              supply in the `pageToken` parameter  from the
+              `Toast-Next-Page-Token` header field value of a  previous request
+              to the endpoint. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<string>
+          pageSize:
+            docs: >
+              The number of objects to return in the array. Deprecated. For more
+              information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          page:
+            docs: >
+              The sequence number of the first object to return in the array.
+              Deprecated. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          lastModified:
+            docs: |
+              Limits the return data to objects created or modified after
+              a specific date and time. For example:
+              `2015-12-01T00:00:00.000+0000`.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          service-charges
+          -request
+      response: list<ServiceCharge>
+types:
+  ServiceCharge:
+    extends:
+      - commons.ExternalReference
+    docs: Any charge applied to a check for something other than menu item. Typical
+      examples include gratuity and delivery fees.
+    properties:
+      name:
+        docs: The name of this service charge.
+        type: optional<string>
+      amountType:
+        docs: The type of service charge.
+        type: optional<ServiceChargeType>
+      amount:
+        docs: Amount in USD to be applied for `FIXED` type service charges.
+        type: optional<double>
+      percent:
+        docs: |
+          Percent fee to be applied for `PERCENT` type service
+          charges, based on pre-discount check amount. Must be a
+          number between 0 and 100.
+        type: optional<double>
+      criteria: optional<ServiceChargeCriteria>
+      gratuity:
+        docs: True if the service charge is a gratuity and is assigned to the owner of
+          the check.
+        type: optional<boolean>
+      taxable:
+        docs: True if tax should be applied to the service charge.
+        type: optional<boolean>
+      applicableTaxes:
+        docs: A reference to the taxes applied to the service charge, if the service
+          charge is taxable.
+        type: optional<list<commons.TaxRate>>
+      serviceChargeCalculation:
+        docs: Defines whether or not the service charge is applied before (PRE) or after
+          (POST) discounts. This field is null for non-percent service charges.
+        type: optional<ServiceChargeCalculation>
+  ServiceChargeType:
+    docs: The type of service charge.
+    enum:
+      - FIXED
+      - PERCENT
+      - OPEN
+  ServiceChargeCalculation:
+    docs: Defines whether or not the service charge is applied before (PRE) or after
+      (POST) discounts. This field is null for non-percent service charges.
+    enum:
+      - PRE_DISCOUNT
+      - POST_DISCOUNT
+  ServiceChargeCriteria:
+    docs: Describes thresholds for when a service charge should be applied to a
+      check.
+    properties:
+      minCheckAmount:
+        docs: The service charge is only applicable if the pre-discount check is at
+          least this amount.
+        type: optional<double>
+      delivery:
+        docs: True if the service charge is only applicable for deliveries.
+        type: optional<boolean>
+      maxCheckAmount:
+        docs: The service charge is waived if the pre-discount check amount is more than
+          this amount. A `null` value means this criteria is inapplicable.
+        type: optional<double>
+      minDeliveryDistance:
+        docs: The service charge is only applicable to deliveries that are at least this
+          distance. A `null` value means this criteria is inapplicable.
+        type: optional<double>
+      takeout:
+        docs: Indicates whether the service charge is automatically applied to orders
+          that have the takeout dining option behavior.
+        type: optional<boolean>
+      dineIn:
+        docs: Indicates whether the service charge is applied to orders that have the
+          dine-in dining option behavior.
+        type: optional<boolean>

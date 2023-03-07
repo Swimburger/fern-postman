@@ -1,0 +1,115 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /diningOptions
+  endpoints:
+    get:
+      path: /{guid}
+      method: GET
+      docs: |
+        Returns a `DiningOption` object
+        containing information about a type of service offered by a
+        restaurant. For example, dine in, take out, and delivery might
+        be dining options for a restaurant.
+      display-name: |
+        Get a dining option
+      path-parameters:
+        guid:
+          docs: The Toast POS GUID of the dining option.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          dining-option
+          -request
+      response: DiningOption
+    getAll:
+      path: ""
+      method: GET
+      docs: |
+        Returns an array of `DiningOption` objects
+        containing information about types of service offered by a
+        restaurant. For example, dine in, take out, and delivery might
+        be dining options for a restaurant. If a `lastModified` date is
+        specified, returns all objects that were created or modified
+        after that date.
+      display-name: |
+        Get dining options
+      request:
+        query-parameters:
+          pageToken:
+            docs: >
+              A string that identifies the set of data objects that the  endpoint will
+              return in its response data. You can use this  parameter to
+              retrieve one page of response data. You  get the value that you
+              supply in the `pageToken` parameter  from the
+              `Toast-Next-Page-Token` header field value of a  previous request
+              to the endpoint. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<string>
+          pageSize:
+            docs: >
+              The number of objects to return in the array. Deprecated. For more
+              information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          page:
+            docs: >
+              The sequence number of the first object to return in the array.
+              Deprecated. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          lastModified:
+            docs: |
+              Limits the return data to objects created or modified after
+              a specific date and time. For example:
+              `2015-12-01T00:00:00.000+0000`.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          dining-options
+          -request
+      response: list<DiningOption>
+types:
+  DiningOption:
+    extends:
+      - commons.ExternalReference
+    properties:
+      name:
+        docs: The name of the dining option.
+        type: optional<string>
+      behavior:
+        docs: |
+          The behavior of the dining option. `TAKE_OUT` and
+          `DELIVERY` require a `customer` to be specified on the
+          order, and `DELIVERY` requires a `deliveryInfo` value.
+        type: optional<DiningOptionBehavior>
+      curbside:
+        docs: >
+          Indicates whether the dining option has curbside behavior, and allows the
+          guest to provide identifying information such as a description of
+          their vehicle.
+        type: optional<boolean>
+  DiningOptionBehavior:
+    docs: |
+      The behavior of the dining option. `TAKE_OUT` and
+      `DELIVERY` require a `customer` to be specified on the
+      order, and `DELIVERY` requires a `deliveryInfo` value.
+    enum:
+      - DINEIN
+      - TAKE_OUT
+      - DELIVERY

@@ -1,0 +1,244 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: ""
+  endpoints:
+    getAllPrices:
+      path: /prices
+      method: POST
+      docs: |
+        Calculates the check price amounts, tax amounts, and service
+        charges for an `Order` object you supply as a _required message
+        body parameter_.
+        The `prices` endpoint validates the order you
+        submit to ensure all referenced data exists and that you include
+        item selections in the expected structure with all required modifier
+        options.
+        Some values that would be present in the response data when
+        creating an order are not present in the response data for the `prices`
+        endpoint. For example, the order GUID is not set because the
+        Toast platform does not create persistent data for the order.
+        The calculated price can change between requests to the
+        `prices` endpoint with the same `Order` object if enough time
+        passes between the requests. The difference in price is
+        possible because the restaurant configuration can change and
+        because some pricing configuration is based on time and date
+        schedules.
+      display-name: Get order prices
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The identifier of the restaurant to be used for this price
+              calculation.
+            type: string
+        body:
+          type: string
+        name: get-order-prices-request
+      response: OrderResponse
+    get:
+      path: /orders/{guid}
+      method: GET
+      docs: Retrieves detailed information about a single order, specified by its
+        GUID.
+      display-name: Get an order
+      path-parameters:
+        guid:
+          docs: The GUID for the order to be returned.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: The identifier of the restaurant where this order was placed.
+            type: string
+        name: get-an-order-request
+      response: commons.Order
+    getBulkOrders:
+      path: /ordersBulk
+      method: GET
+      docs: |
+        Returns an array of `Order` objects containing detailed
+        information about all of the orders opened during a period of time.
+        You can return the orders for either a specific period of time
+        or for one business day.
+        * Specify both `startDate` and `endDate` to return the orders
+          modified during that period of time.
+        * Specify the `businessDate` to return the orders promised
+          during that business day.
+      display-name: Get multiple orders
+      request:
+        query-parameters:
+          startDate:
+            docs: >
+              The inclusive start date and time. The results include orders with a
+              modified date and time that occur at or after the `startDate`, but
+              before the `endDate`. Use ISO-8601 format for the date and time,
+              including a decimal fraction of a second. For example,
+              `2016-01-01T14:13:12.000+0400`. URL encode the date and time
+              value. The date must be after 2015-12-01T00:00:00.000+0000.
+            type: optional<string>
+          endDate:
+            docs: >
+              The exclusive end date and time. The results exclude any orders that have
+              a modified date and time that occurs at or after `endDate`. Use
+              ISO-8601 format for the date and time, including a decimal
+              fraction of a second. For example, `2016-01-01T14:13:12.000+0400`.
+              URL encode the date and time value. The `endDate` date and time
+              must be later than the `startDate` parameter value.
+            type: optional<string>
+          businessDate:
+            docs: |
+              The business date that same-day orders opened or that
+              scheduled orders are promised, in the format `yyyymmdd`.
+              The business day of an order is determined by the time the
+              order is opened or promised in the local time zone, and the
+              restaurant's business day cutoff time, which is available
+              from  the `General` object of the restaurants API in the
+              `closeoutHour` property.
+            type: optional<string>
+          pageSize:
+            docs: >
+              The maximum number of objects to return in the array. If the number of
+              objects selected by your request is greater than the `pageSize`,
+              the API uses response pagination for the remaining objects. The
+              maximum `pageSize` is `100`. For more information, see [the _Toast
+              Developer
+              Guide_](https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html).
+            type: optional<integer>
+          page:
+            docs: >
+              The sequence number of the set of objects to return in paginated response
+              data. For example, if you set the `pageSize` parameter to `10`,
+              and you set `page` to `2`, the API returns a set of objects that
+              starts with the eleventh object. For more information, see [the
+              _Toast Developer
+              Guide_](https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html).
+            type: optional<integer>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The identifier for the restaurant that processed the orders.
+            type: string
+        name: get-multiple-orders-request
+      response: list<commons.Order>
+    addItemToCheck:
+      path: /orders/{orderGuid}/checks/{checkGuid}/selections
+      method: POST
+      docs: >
+        Adds one or more items to an existing check in an order. Include
+        information about the items in an array of `Selection` objects in the
+        message body. Specify the Toast platform GUID of the order and check in
+        REST path parameters. For more information, see  <a
+        href="https://doc.toasttab.com/doc/devguide/apiAddingItemsToACheck.html">the  _Toast
+        Developer Guide_</a>.
+      display-name: Add items to a check
+      path-parameters:
+        orderGuid:
+          docs: |
+            The Toast platform identifier of the order that you are
+            adding items to.
+          type: string
+        checkGuid:
+          docs: |
+            The Toast platform identifier of the check that you are
+            adding items to.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: The identifier of the restaurant.
+            type: string
+        body:
+          type: list<commons.Selection>
+        name: add-items-to-a-check-request
+    update:
+      path: /orders/{orderGuid}/deliveryInfo
+      method: PATCH
+      docs: >
+        Updates the delivery information of an order that uses the `DELIVERY`
+        dining option. You can use this endpoint to update the delivery time,
+        dispatch time, the employee who is delivering the order, the delivery
+        state, or a combination of the four. Specify the Toast platform GUID of
+        the order in the `PATCH` path parameters. Returns a JSON `Order` object
+        if successful. For more information, see  <a
+        href="https://doc.toasttab.com/doc/devguide/apiUpdatingDeliveryInfoForAnOrder.html">
+        the _Toast Developer Guide_</a>.
+      display-name: Update delivery information
+      path-parameters:
+        orderGuid:
+          docs: |
+            The Toast platform identifier of the order that you are
+            updating the delivery information for.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: The identifier of the restaurant.
+            type: string
+        body:
+          type: list<commons.DeliveryInfo>
+        name: update-delivery-information-request
+    getAll:
+      path: /orders
+      method: GET
+      docs: |
+        Returns a list of the GUIDs of all orders opened during a period of
+        time. You can return the list of orders for either a period of up to
+        one hour or for one business day.
+        * Specify both `startDate` and `endDate` to return the list of orders
+          modified during a period of up to one hour.
+        * Specify the `businessDate` to return the list of orders promised
+          for delivery during a business day.
+      display-name: Get order identifiers (deprecated)
+      request:
+        query-parameters:
+          startDate:
+            docs: \ The inclusive start date and time. The results exclude orders with an
+              earlier modified date and time. Use ISO-8601 format for the date
+              and time, including a decimal fraction of a second. For example,
+              `2016-01-01T14:13:12.000+0400`. URL encode the date and time
+              value. The date must be after 2015-12-01T00:00:00.000+0000.
+            type: optional<string>
+          endDate:
+            docs: >
+              The exclusive end date and time. The results exclude orders with an equal
+              or later modified date and time. Use ISO-8601 format for the date
+              and time, including a decimal fraction of a second. For example,
+              `2016-01-01T14:13:12.000+0400`. URL encode the date and time
+              value. The `endDate` date and time must be later than the
+              `startDate` parameter value.
+            type: optional<string>
+          businessDate:
+            docs: >
+              The business date that same-day orders opened or that scheduled orders are
+              promised, in the format `yyyyMMdd`. The business day of an order
+              is determined by the time the order is opened or promised in the
+              local time zone, and by the restaurant's business day cutoff time,
+              which is available from  the `General` object of the restaurants
+              API in the `closeoutHour` property.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: The identifier for the restaurant to retrieve orders from.
+            type: string
+        name: get-order-identifiers-(deprecated)-request
+      response: list<string>
+    create:
+      path: /orders
+      method: POST
+      docs: Submits an order to the server. Returns a JSON `Order` object if
+        successful.
+      display-name: Post an order
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: The identifier for the restaurant where this order was placed.
+            type: string
+        body: commons.Order
+        name: post-an-order-request
+      response: OrderResponse
+types:
+  OrderResponse:
+    properties:
+      orders: optional<list<commons.Order>>

@@ -1,0 +1,92 @@
+imports:
+  commons: commons.yml
+service:
+  auth: true
+  base-path: /priceGroups
+  endpoints:
+    get:
+      path: /{guid}
+      method: GET
+      docs: |
+        Returns a `PriceGroup` object
+        containing information about a variable price level configured for
+        items at a restaurant.
+      display-name: |
+        Get a price level for menu items
+      path-parameters:
+        guid:
+          docs: The Toast POS GUID of the price level.
+          type: string
+      request:
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          price-level-for-menu-items
+          -request
+      response: PriceGroup
+    getAll:
+      path: ""
+      method: GET
+      docs: |
+        Returns an array of `PriceGroup` objects
+        containing information about the variable price levels
+        configured for items at a restaurant. If a `lastModified` date
+        is specified, returns all objects that were created or modified
+        after that date.
+      display-name: |
+        Get price levels for menu items
+      request:
+        query-parameters:
+          pageToken:
+            docs: >
+              A string that identifies the set of data objects that the  endpoint will
+              return in its response data. You can use this  parameter to
+              retrieve one page of response data. You  get the value that you
+              supply in the `pageToken` parameter  from the
+              `Toast-Next-Page-Token` header field value of a  previous request
+              to the endpoint. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<string>
+          pageSize:
+            docs: >
+              The number of objects to return in the array. Deprecated. For more
+              information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          page:
+            docs: >
+              The sequence number of the first object to return in the array.
+              Deprecated. For more information, see  <a
+              href="https://doc.toasttab.com/doc/devguide/apiResponseDataPagination.html">Paginating
+              response data</a>.
+            type: optional<integer>
+          lastModified:
+            docs: |
+              Limits the return data to objects created or modified after
+              a specific date and time. For example:
+              `2015-12-01T00:00:00.000+0000`.
+            type: optional<string>
+        headers:
+          Toast-Restaurant-External-ID:
+            docs: |
+              The Toast POS GUID of the restaurant that the configuration
+              applies to.
+            type: string
+        name: |-
+          price-levels-for-menu-items
+          -request
+      response: list<PriceGroup>
+types:
+  PriceGroup:
+    extends:
+      - commons.ToastReference
+    properties:
+      name:
+        docs: The name of this price group.
+        type: optional<string>
