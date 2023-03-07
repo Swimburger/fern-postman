@@ -11,7 +11,7 @@ import path from "path";
 import tmp from "tmp-promise";
 import { COLLECTION_OUTPUT_FILENAME, writePostmanCollection } from "../writePostmanCollection";
 
-const FIXTURES = ["toast", "test-api", "any-auth"];
+const FIXTURES = ["loop-test-api", "test-api", "any-auth"];
 
 describe("convertToPostman", () => {
     for (const fixture of FIXTURES) {
@@ -64,7 +64,7 @@ describe("convertToPostman", () => {
 
                 expect(postmanCollection).toMatchSnapshot();
             },
-            2000000_000
+            20_000
         );
     }
 });
