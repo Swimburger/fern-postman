@@ -30,7 +30,7 @@
     "endent": "^2.1.0",
     "lodash": "^4.17.21",
     "postman-collection": "^4.1.4",
-    "zod": "^3.14.3"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@babel/core": "^7.18.5",
